@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Licensing — Probity</title>
+<meta name="description" content="Authorities that have registered Probity to tender, execute or certify work under their jurisdiction." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* tokens copied verbatim from index.html so the two pages can't drift */
+:root{
+  /* This page runs light where the home page runs dark. A register of
+     seals belongs on paper, and it keeps the eight marks from being
+     eight bright holes punched in a black ground. The palette is the
+     home page's, inverted: the ink is now the type, not the field.  */
+  --ink:        #F4F1EA;   /* the ground — warm paper            */
+  --ink-deep:   #EAE5DA;   /* the ground, one step down          */
+  --slate:      #16202B;
+  /* --sandstone is deliberately unused on this page — the register
+     runs on ink and the one court red, no gold */
+  --paper:      #16202B;   /* primary type                        */
+  --gold:       #16202B;   /* interactive — ink, not white        */
+  --court:      #C8402E;
+
+  --display: "Fraunces", Georgia, serif;
+  --body:    "Instrument Sans", system-ui, sans-serif;
+  --mono:    "IBM Plex Mono", ui-monospace, monospace;
+
+  --rule: rgba(24,32,44,.14);
+  --gut: clamp(1.25rem, 5vw, 5rem);
+  --nav-h: 84px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  background:var(--ink);
+  /* a long, slow warming toward the foot so the field isn't flat */
+  background-image:linear-gradient(178deg,#FAF8F3 0%,var(--ink) 52%,var(--ink-deep) 100%);
+  background-attachment:fixed;
+  color:var(--paper);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.55;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{ color:inherit; text-decoration:none; }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:4px; border-radius:2px; }
+
+/* ============================================================
+   NAV — identical to the home page, except there is no
+   photograph behind it here, so it carries a fill from the start.
+   ============================================================ */
+.nav{
+  position:fixed; inset:0 0 auto 0; z-index:60;
+  height:var(--nav-h);
+  display:flex; align-items:center; gap:2rem;
+  padding:0 var(--gut);
+  background:rgba(250,248,243,.82);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+  transition:height .5s var(--ease), background .5s var(--ease),
+             border-color .5s var(--ease), backdrop-filter .5s var(--ease);
+  transform:translateY(-100%);
+  animation:navDrop 1s var(--ease) .15s forwards;
+}
+@keyframes navDrop{ to{ transform:translateY(0); } }
+.nav.is-scrolled{ height:66px; }
+
+.mark{ display:flex; align-items:center; gap:.7rem; margin-right:auto; }
+.seal{ width:26px; height:26px; flex:none; overflow:visible; }
+.seal circle,.seal path{
+  fill:none; stroke:var(--gold); stroke-width:1.4;
+  stroke-linecap:round;
+  stroke-dasharray:var(--len,120); stroke-dashoffset:var(--len,120);
+  animation:draw 1.6s var(--ease) .6s forwards;
+}
+.seal .inner{ animation-delay:.95s; }
+@keyframes draw{ to{ stroke-dashoffset:0; } }
+
+.mark b{
+  font-family:var(--display);
+  font-variation-settings:"opsz" 100, "SOFT" 0;
+  font-weight:600; font-size:1.36rem; letter-spacing:.02em;
+  line-height:1;
+}
+.mark b i{ font-style:normal; color:var(--court); }
+
+.links{ display:flex; gap:2.3rem; align-items:center; }
+.links a{
+  position:relative;
+  font-size:.83rem; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:500; color:rgba(24,32,44,.74);
+  transition:color .3s;
+  padding:.4rem 0;
+}
+.links a::after{
+  content:""; position:absolute; left:0; bottom:0;
+  height:1px; width:100%; background:var(--gold);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .45s var(--ease);
+}
+.links a:hover{ color:var(--paper); }
+.links a:hover::after{ transform:scaleX(1); }
+/* the page you're on keeps its rule drawn */
+.links a[aria-current="page"]{ color:var(--paper); }
+.links a[aria-current="page"]::after{ transform:scaleX(1); }
+
+.burger{
+  display:none; width:42px; height:42px; border:1px solid var(--rule);
+  background:none; cursor:pointer; padding:0; position:relative;
+}
+.burger i{
+  position:absolute; left:11px; width:20px; height:1.5px; background:var(--paper);
+  transition:transform .4s var(--ease), opacity .25s;
+}
+.burger i:nth-child(1){ top:15px; } .burger i:nth-child(2){ top:25px; }
+.nav.menu-open .burger i:nth-child(1){ transform:translateY(5px) rotate(45deg); }
+.nav.menu-open .burger i:nth-child(2){ transform:translateY(-5px) rotate(-45deg); }
+
+.sheet{
+  position:fixed; inset:0; z-index:55;
+  background:rgba(250,248,243,.97);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  display:flex; flex-direction:column; justify-content:center; gap:.4rem;
+  padding:0 var(--gut);
+  clip-path:inset(0 0 100% 0); transition:clip-path .6s var(--ease);
+}
+.sheet.open{ clip-path:inset(0 0 0 0); }
+.sheet a{
+  font-family:var(--display); font-weight:300; font-size:2.1rem;
+  padding:.5rem 0; border-bottom:1px solid rgba(24,32,44,.10);
+  opacity:0; transform:translateY(14px); transition:all .5s var(--ease);
+}
+.sheet.open a{ opacity:1; transform:none; }
+.sheet.open a:nth-child(1){ transition-delay:.14s; }
+.sheet.open a:nth-child(2){ transition-delay:.20s; }
+.sheet.open a:nth-child(3){ transition-delay:.26s; }
+.sheet.open a:nth-child(4){ transition-delay:.32s; }
+
+/* ============================================================
+   PAGE HEAD
+   ============================================================ */
+.section{ position:relative; padding:clamp(4rem,8vw,7rem) var(--gut); }
+/* the band below carries the nav offset now, so the section starts flush */
+.page-head{ padding-top:0; }
+.section-head{ max-width:1440px; margin:0 auto; }
+
+/* ---------- head type, and the way it arrives ----------
+   Same mechanism as the home page: every line sits in a mask
+   and is pushed up from behind it, so the copy appears to be
+   set onto the photograph rather than faded over it. The
+   delays are already carried inline on the markup — the
+   headline at .66/.76s, the lede at 1.05s — which lets the
+   band settle first and the type land on a still picture. */
+.reveal{ overflow:hidden; display:block; }
+.reveal > *{
+  display:block;
+  transform:translateY(115%);
+  animation:rise 1.15s var(--ease) forwards;
+}
+@keyframes rise{ to{ transform:translateY(0); } }
+
+.label{ overflow:hidden; display:block; }
+.label span{
+  display:inline-block;
+  font-family:var(--mono); font-size:.72rem; font-weight:500;
+  text-transform:uppercase; color:rgba(24,32,44,.62);
+  letter-spacing:.42em;
+  transform:translateY(115%);
+  animation:rise 1.1s var(--ease) .5s forwards,
+            tighten 1.6s var(--ease) .5s forwards;
+}
+@keyframes tighten{ to{ letter-spacing:.24em; } }
+
+.page-head h1{
+  font-family:var(--display);
+  font-variation-settings:"opsz" 144, "SOFT" 0, "WONK" 0;
+  font-weight:300;
+  font-size:clamp(2.4rem,5.4vw,4.9rem);
+  line-height:1.0;
+  letter-spacing:-.028em;
+  margin:1.5rem 0 0;
+  max-width:22ch;
+  text-wrap:balance;
+}
+/* the emphasis carries on weight and the rule below it, not on a
+   second colour — the headline stays one ink */
+.page-head h1 em{
+  font-style:normal; font-weight:600;
+  position:relative;
+}
+/* the rule under the emphasis draws itself once the line has landed */
+.page-head h1 em::after{
+  content:""; position:absolute; left:0; right:0; bottom:.06em; height:2px;
+  background:var(--court);
+  transform:scaleX(0); transform-origin:left;
+  animation:drawRule 1.1s var(--ease) 1.6s forwards;
+}
+@keyframes drawRule{ to{ transform:scaleX(1); } }
+
+.lede{
+  margin:1.7rem 0 0; max-width:56ch;
+  font-size:clamp(1rem,1.3vw,1.14rem);
+  color:rgba(24,32,44,.80);
+}
+
+/* ============================================================
+   THE HEAD BAND
+   A photograph of the city the register is written against,
+   bled corner to corner and washed back into the paper so the
+   ink still carries. It resolves to flat paper at the foot, so
+   the marks below sit on a clean ground rather than on picture.
+
+   The band owns the top padding and pulls itself out of the
+   section gutter with a negative margin — that is what lets it
+   reach the actual edges of the viewport while the type inside
+   stays on the 1440 measure.
+   ============================================================ */
+.head-band{
+  position:relative;
+  margin:0 calc(-1 * var(--gut)) clamp(2.5rem,5vw,4rem);
+  padding:calc(var(--nav-h) + clamp(3.5rem,8vw,6.5rem)) var(--gut) clamp(3.5rem,7vw,6rem);
+  /* a defined rectangle rather than a band whose height is an
+     accident of the copy — the photograph gets a proportion to
+     fill and the type is centred inside it                      */
+  min-height:clamp(360px,42vw,560px);
+  display:flex; flex-direction:column; justify-content:center;
+  overflow:hidden;
+  isolation:isolate;
+}
+.head-band > .section-head{ position:relative; z-index:2; width:100%; }
+
+/* the picture opens the sequence — it wipes down from the nav on
+   the same clip-path idiom the menu sheet uses, so the band is
+   still resolving when the first line of type rises into it */
+.head-bg{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  clip-path:inset(0 0 100% 0);
+  animation:bandOpen 1.5s var(--ease) .1s forwards;
+}
+@keyframes bandOpen{ to{ clip-path:inset(0 0 0 0); } }
+
+.head-bg__img{
+  position:absolute; inset:-3%;
+  background:url("assets/bengaluru-panorama.jpg") center 55% / cover no-repeat;
+  /* the photograph is allowed to be a photograph. Enough of the
+     colour survives to read as a city; the wash below, not the
+     filter, is what buys the copy its contrast.                 */
+  filter:saturate(.78) contrast(1.02) brightness(1.01);
+  animation:bandDrift 44s ease-in-out infinite alternate;
+  transform-origin:58% 60%;
+}
+@keyframes bandDrift{
+  from{ transform:scale(1)    translate3d(0,0,0); }
+  to  { transform:scale(1.07) translate3d(-1%,-.8%,0); }
+}
+
+/* the wash — vertical carries legibility and the dissolve into
+   paper, horizontal keeps the left half quietest, which is where
+   the headline and lede actually sit                            */
+.head-bg__wash{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(to bottom,
+      rgba(244,241,234,.46) 0%,
+      rgba(244,241,234,.30) 45%,
+      rgba(244,241,234,.42) 82%,
+      rgba(244,241,234,.58) 100%),
+    linear-gradient(to right,
+      rgba(244,241,234,.90) 0%,
+      rgba(244,241,234,.72) 34%,
+      rgba(244,241,234,.30) 66%,
+      rgba(244,241,234,.12) 100%);
+}
+
+/* a hairline where the picture gives out, so the band has a
+   defined foot rather than an indefinite smudge */
+.head-bg::after{
+  content:""; position:absolute; left:0; right:0; bottom:0;
+  height:1px; background:var(--rule);
+}
+
+/* ============================================================
+   THE REGISTER
+   Each authority is a mounted credential: the mark sits on a
+   paper plate, the way a seal sits on a certificate, and the
+   particulars are set below it on the dark ground.
+
+   The plate is doing real work — half of these marks arrive as
+   opaque JPEGs with white grounds, so any attempt to knock them
+   out to a single ink colour turns them into white rectangles.
+   Mounting them keeps every mark on the ground it was drawn for
+   and lets the grid stay honest at any count.
+   ============================================================ */
+.register{ max-width:1440px; margin:0 auto; }
+
+/* one continuous wall, no section breaks. A narrower track than the
+   grouped version used, so eleven marks fill the row on a wide
+   screen instead of stranding half of it.                        */
+.logo-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:clamp(1rem,1.6vw,1.5rem);
+}
+
+.logo-cell{
+  display:flex; flex-direction:column; gap:1.15rem;
+  opacity:0; transform:translateY(18px);
+}
+/* cells stretch to the tallest in the row, and the registration
+   line is pushed to the foot, so the mono rules line up across
+   the row however long an authority's full name runs           */
+.meta{ display:flex; flex-direction:column; flex:1; }
+.logo-cell.in{
+  opacity:1; transform:none;
+  transition:opacity .8s var(--ease), transform .8s var(--ease);
+}
+
+/* the plate — a clean white card lifted off the warm ground by a
+   hairline and a shadow that only deepens on hover, so the wall
+   stays flat at rest                                            */
+.plate{
+  position:relative;
+  height:118px; border-radius:3px;
+  background:#FFFFFF;
+  border:1px solid rgba(24,32,44,.10);
+  box-shadow:0 8px 20px -16px rgba(24,32,44,.55);
+  display:flex; align-items:center; justify-content:center;
+  padding:1.15rem 1.35rem;
+  overflow:hidden;
+  transition:transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.logo-cell:hover .plate{
+  transform:translateY(-3px);
+  box-shadow:0 16px 30px -18px rgba(24,32,44,.6);
+}
+
+/* one optical box for every mark, with a per-logo trim so a
+   square crest and a wide wordmark carry the same weight       */
+.plate img{
+  /* an explicit cap, not a percentage — the plate's content area has
+     no definite height for a percentage to resolve against, so a
+     wide mark would render at its natural size and get cropped     */
+  max-height:76px; max-width:100%;
+  width:auto; height:auto; object-fit:contain;
+  transform:scale(var(--s,1));
+  /* multiply drops the opaque white ground the JPEG marks arrive
+     with straight out against the plate, so a scanned seal and a
+     transparent PNG sit on the same paper. Harmless on the PNGs. */
+  mix-blend-mode:multiply;
+  /* the marks are all officially specified colours; we only take
+     a fraction of the saturation out so the wall reads as one
+     register, and hand it straight back on hover.
+     --lift and --crush are a white-point trim for scanned marks:
+     multiply only disappears a ground that is actually white, so a
+     scan that came in on grey paper reads as a dirty square until
+     its highlights are pushed to 255. Contrast does most of the
+     work — it clips the ground white while keeping the seal's ink
+     dark, where brightness alone would just wash the whole thing
+     out. Only RERA needs it; every other mark is already clean.  */
+  filter:saturate(.72) contrast(var(--crush,1)) brightness(var(--lift,1));
+  transition:filter .5s var(--ease);
+}
+.logo-cell:hover .plate img{
+  filter:contrast(var(--crush,1)) brightness(var(--lift,1));
+}
+
+.meta b{
+  display:block; font-family:var(--display);
+  font-variation-settings:"opsz" 24;
+  font-size:1.06rem; font-weight:600; letter-spacing:.01em;
+  color:var(--paper); line-height:1.2;
+}
+.meta i{
+  display:block; font-style:normal;
+  font-size:.82rem; color:rgba(24,32,44,.6);
+  margin-top:.2rem; line-height:1.35;
+}
+.meta span{
+  display:block; font-family:var(--mono); font-size:.61rem;
+  letter-spacing:.15em; text-transform:uppercase;
+  color:rgba(24,32,44,.55);
+  /* auto, not a fixed gap — this is what drops the registration line
+     to the foot of the cell so the rules line up across a row even
+     when one authority's name runs to two lines. The breathing room
+     above the rule comes from the padding instead.                */
+  margin-top:auto; padding-top:.9rem;
+  border-top:1px solid rgba(24,32,44,.12);
+}
+
+.note{
+  max-width:1440px; margin:clamp(2.5rem,5vw,3.5rem) auto 0;
+  padding-top:1.4rem; border-top:1px solid var(--rule);
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.16em;
+  text-transform:uppercase; color:rgba(24,32,44,.55);
+}
+
+/* ============================================================
+   FOOT
+   ============================================================ */
+.foot{
+  border-top:1px solid var(--rule);
+  padding:2.2rem var(--gut);
+  display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between;
+  font-family:var(--mono); font-size:.66rem; letter-spacing:.2em;
+  text-transform:uppercase; color:rgba(24,32,44,.55);
+}
+.foot a:hover{ color:var(--paper); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:860px){
+  :root{ --nav-h:70px; }
+  .links{ display:none; }
+  .burger{ display:block; }
+}
+@media (max-width:860px){
+  /* a tighter crop keeps the skyline legible in a narrow band */
+  .head-bg__img{ background-position:center 58%; }
+  .head-band{ min-height:clamp(320px,60vw,420px); }
+  /* narrow screens have no quiet right-hand side to give away, so
+     the wash flattens out and carries the copy on its own */
+  .head-bg__wash{
+    background:linear-gradient(to bottom,
+      rgba(244,241,234,.72) 0%,
+      rgba(244,241,234,.62) 50%,
+      rgba(244,241,234,.74) 100%);
+  }
+}
+@media (max-width:520px){
+  .head-band{ padding-bottom:clamp(2.5rem,6vw,3.5rem); min-height:300px; }
+  .logo-grid{ grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.85rem; }
+  .logo-cell{ gap:.85rem; }
+  .plate{ height:88px; padding:.85rem 1rem; }
+  .plate img{ max-height:58px; }
+  .meta b{ font-size:.94rem; }
+  .meta i{ font-size:.76rem; }
+  /* the type lives on the inner span now, so the override has to
+     land there — and the tighten keyframe has to be dropped, or it
+     animates straight back over this narrower tracking */
+  .label span{
+    font-size:.63rem; letter-spacing:.3em;
+    animation-name:rise;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  .reveal > *,.label span{ transform:none; }
+  .logo-cell{ opacity:1; transform:none; }
+  .head-bg__img{ animation:none; transform:none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav">
+  <a class="mark" href="index_17.html" aria-label="Probity home">
+    <svg class="seal" viewBox="0 0 26 26" aria-hidden="true">
+      <circle cx="13" cy="13" r="11.5" style="--len:73"/>
+      <path class="inner" d="M9 17.5V8.5h4.6a3.2 3.2 0 0 1 0 6.4H9" style="--len:30"/>
+    </svg>
+    <b>Prob<i>i</i>ty</b>
+  </a>
+
+  <nav class="links" aria-label="Primary">
+    <a href="licensing_3.html" aria-current="page">Licensing</a>
+    <a href="index_17.html#projects">Projects</a>
+    <a href="index_17.html#process">Process</a>
+    <a href="index_17.html#contact">Contact</a>
+  </nav>
+
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="sheet">
+    <i></i><i></i>
+  </button>
+</header>
+
+<div class="sheet" id="sheet">
+  <a href="licensing_3.html">Licensing</a>
+  <a href="index_17.html#projects">Projects</a>
+  <a href="index_17.html#process">Process</a>
+  <a href="index_17.html#contact">Contact</a>
+</div>
+
+<!-- ===================== THE REGISTER ===================== -->
+<main>
+  <section class="section page-head">
+    <div class="head-band">
+      <div class="head-bg" aria-hidden="true">
+        <div class="head-bg__img"></div>
+        <div class="head-bg__wash"></div>
+      </div>
+
+    <div class="section-head">
+      <span class="label"><span>Approvals &amp; registrations</span></span>
+
+      <h1>
+        <span class="reveal"><span style="animation-delay:.66s">Cleared to work on</span></span>
+        <span class="reveal"><span style="animation-delay:.76s">the <em>country's spine</em>.</span></span>
+      </h1>
+
+      <span class="reveal">
+        <p class="lede" style="animation-delay:1.05s">
+          Each authority below has registered Probity to tender, execute or certify work
+          under its jurisdiction. Registration numbers, categories and validity dates are
+          available on request.
+        </p>
+      </span>
+    </div>
+    </div><!-- /.head-band -->
+
+    <div class="register">
+      <div class="logo-grid">
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/nhai.png" alt="National Highways Authority of India" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>NHAI</b>
+            <i>National Highways Authority of India</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/namma-metro.png" alt="Namma Metro — Bangalore Metro Rail Corporation" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>BMRCL</b>
+            <i>Bangalore Metro Rail Corporation</i>
+            <span>Approved vendor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/aai.png" alt="Airports Authority of India" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>AAI</b>
+            <i>Airports Authority of India</i>
+            <span>Licensed works</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/hal.png" alt="Hindustan Aeronautics Limited" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>HAL</b>
+            <i>Hindustan Aeronautics Limited</i>
+            <span>Empanelled supplier</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/GBA.jpeg" alt="Greater Bengaluru Authority" loading="lazy" decoding="async" style="--s:.94">
+          </div>
+          <div class="meta">
+            <b>GBA</b>
+            <i>Greater Bengaluru Authority</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bmrda.webp" alt="Bangalore Metropolitan Region Development Authority" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>BMRDA</b>
+            <i>Bangalore Metropolitan Region Development Authority</i>
+            <span>Approved agency</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/rdpr.png" alt="Rural Development &amp; Panchayat Raj Department, Government of Karnataka" loading="lazy" decoding="async" style="--s:.92">
+          </div>
+          <div class="meta">
+            <b>RDPR Karnataka</b>
+            <i>Rural Development &amp; Panchayat Raj</i>
+            <span>Empanelled agency</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/kiadb.jpeg" alt="Karnataka Industrial Area Development Board" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>KIADB</b>
+            <i>Karnataka Industrial Area Development Board</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/rera.jpeg" alt="Karnataka Real Estate Regulatory Authority" loading="lazy" decoding="async" style="--s:1;--crush:1.5;--lift:1.12">
+          </div>
+          <div class="meta">
+            <b>RERA Karnataka</b>
+            <i>Real Estate Regulatory Authority</i>
+            <span>Registered agent</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/geological_survey_of_india.jpeg" alt="Geological Survey of India" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>GSI</b>
+            <i>Geological Survey of India</i>
+            <span>Empanelled agency</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/MoEFCC.jpg" alt="Ministry of Environment, Forest and Climate Change" loading="lazy" decoding="async">
+          </div>
+          <div class="meta">
+            <b>MoEFCC</b>
+            <i>Ministry of Environment, Forest &amp; Climate Change</i>
+            <span>Accredited consultant</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bsnl.webp" alt="Bharat Sanchar Nigam Limited" loading="lazy" decoding="async" style="--s:.92">
+          </div>
+          <div class="meta">
+            <b>BSNL</b>
+            <i>Bharat Sanchar Nigam Limited</i>
+            <span>Approved vendor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <!-- a thin-line seal, unlike a solid one, needs every pixel
+                 of the plate — the linework disappears if it is trimmed -->
+            <img src="assets/logos/kptcl.png" alt="Karnataka Power Transmission Corporation Limited" loading="lazy" decoding="async" style="--s:1.06">
+          </div>
+          <div class="meta">
+            <b>KPTCL</b>
+            <i>Karnataka Power Transmission Corporation Limited</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bescom-logo.jpg" alt="Bangalore Electricity Supply Company Limited" loading="lazy" decoding="async" style="--s:.96">
+          </div>
+          <div class="meta">
+            <b>BESCOM</b>
+            <i>Bangalore Electricity Supply Company Limited</i>
+            <span>Approved vendor</span>
+          </div>
+        </div>
+
+        <!-- ADD MORE AUTHORITIES HERE.
+             Copy one .logo-cell block, drop the file into assets/logos/,
+             and update the alt text, name and designation. The grid
+             reflows at any count.
+             style="--s:.9" trims a mark that sits optically large.
+             style="--crush:1.5;--lift:1.12" clips a scanned mark's
+             grey ground to white so multiply can drop it. Check a
+             new file's corner pixel before reaching for these — most
+             official marks already arrive on pure white. -->
+
+      </div>
+    </div>
+
+    <p class="note">Marks shown are the property of their respective authorities.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 Probity</span>
+  <span>Bengaluru, Karnataka</span>
+  <a href="index_17.html">Home</a>
+</footer>
+
+<script>
+(function(){
+  var nav    = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  var sheet  = document.getElementById('sheet');
+  var calm   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* nav condenses on scroll */
+  var onScroll = function(){ nav.classList.toggle('is-scrolled', window.scrollY > 24); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  /* mobile menu */
+  burger.addEventListener('click', function(){
+    var open = sheet.classList.toggle('open');
+    nav.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  sheet.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') burger.click();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && sheet.classList.contains('open')) burger.click();
+  });
+
+  /* the register deals itself in, six cells at a time */
+  var cells = document.querySelectorAll('.logo-cell');
+  if (calm || !('IntersectionObserver' in window)){
+    [].forEach.call(cells, function(c){ c.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting) return;
+        var i = [].indexOf.call(cells, entry.target);
+        entry.target.style.transitionDelay = (i % 6) * 70 + 'ms';
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      });
+    }, { threshold:.2, rootMargin:'0px 0px -8%' });
+    [].forEach.call(cells, function(c){ io.observe(c); });
+  }
+})();
+</script>
+</body>
+</html>
