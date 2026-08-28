@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Probity</title>
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/favicon-512.png">
+<meta name="description" content="Selected work — buildings Probity has carried through approval, execution and certification in Bengaluru." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/contact-card.css">
+<style>
+/* ============================================================
+   THE GALLERY — Premium Architectural Layout
+   Spacious 2-column balanced pairs with hero featured plate
+   ============================================================ */
+
+/* grid shell — generous gaps for an airy, un-clustered feel */
+.works {
+  --gap-x: clamp(1.8rem, 3.5vw, 3.5rem);
+  --gap-y: clamp(2.5rem, 4.5vw, 4.8rem);
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--gap-x);
+  row-gap: var(--gap-y);
+}
+
+/* ── balanced row placement ──────────────────────────────────
+   Row 1 : Brookfield (12 cols hero plate)
+   Row 2 : DP World (6 cols) + Equinox Water Edge (6 cols)
+   Row 3 : Peninsula Heights (6 cols) + Purva Atmosphere (6 cols)
+   Row 4 : Purva Bluebelle (6 cols) + Purva Oakshire (6 cols)
+   ───────────────────────────────────────────────────────────── */
+.work:nth-child(1) { grid-column: 1 / -1; }
+.work:nth-child(2) { grid-column: 1 / 7; }
+.work:nth-child(3) { grid-column: 7 / 13; }
+.work:nth-child(4) { grid-column: 1 / 7; }
+.work:nth-child(5) { grid-column: 7 / 13; }
+.work:nth-child(6) { grid-column: 1 / 7; }
+.work:nth-child(7) { grid-column: 7 / 13; }
+
+.work { margin: 0; }
+
+/* ── the plate ──────────────────────────────────────────────── */
+.work-plate {
+  position: relative;
+  overflow: hidden;
+  background: #0c1218;
+  /* entrance curtain drop */
+  clip-path: inset(0 0 100% 0);
+  box-shadow: 0 8px 32px -12px rgba(12, 18, 26, .18);
+  transition:
+    clip-path   1.1s var(--ease),
+    box-shadow  0.7s var(--ease);
+}
+.work.in .work-plate { clip-path: inset(0 0 0% 0); }
+
+/* uniform aspect ratios per row for razor-sharp alignment */
+.work:nth-child(1) .work-plate { aspect-ratio: 16 / 8.5; }
+.work:nth-child(n+2) .work-plate { aspect-ratio: 16 / 10.5; }
+
+/* ── photograph ─────────────────────────────────────────────── */
+.work-plate img,
+.work-plate picture {
+  width: 100%; height: 100%; display: block;
+}
+.work-plate img {
+  object-fit: cover;
+  transform: scale(1.001);
+  filter: contrast(1.06) saturate(1.10) brightness(1.02);
+  transition:
+    transform 1.55s var(--ease),
+    filter    1.1s  var(--ease);
+}
+.work:hover .work-plate img {
+  transform: scale(1.055);
+  filter: contrast(1.10) saturate(1.18) brightness(1.04);
+}
+
+/* precise focal composition per building */
+.work:nth-child(1) .work-plate img { object-position: center 38%; }
+.work:nth-child(2) .work-plate img { object-position: center 25%; }
+.work:nth-child(3) .work-plate img { object-position: center 28%; }
+.work:nth-child(4) .work-plate img { object-position: center 15%; }
+.work:nth-child(5) .work-plate img { object-position: center 10%; }
+.work:nth-child(6) .work-plate img { object-position: center 38%; }
+.work:nth-child(7) .work-plate img { object-position: center 45%; }
+
+/* ── shimmer sweep on arrival ──────────────────────────────── */
+.work-plate::before {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 55%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, .09) 50%,
+    transparent 100%
+  );
+  z-index: 4;
+  pointer-events: none;
+}
+.work.in .work-plate::before {
+  animation: plateSweep 1.25s var(--ease) 0.4s both;
+}
+@keyframes plateSweep {
+  from { left: -55%; }
+  to   { left: 145%; }
+}
+
+/* ── hover: dark gradient veil ──────────────────────────────── */
+.work-plate::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 15, 22, .85) 0%,
+    rgba(10, 15, 22, .18) 45%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.55s var(--ease);
+  z-index: 1;
+}
+.work:hover .work-plate::after { opacity: 1; }
+.work:hover .work-plate {
+  box-shadow: 0 24px 56px -16px rgba(10, 15, 22, .45);
+}
+
+/* ── hover overlay text ─────────────────────────────────────── */
+.work-hover {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: clamp(1rem, 2vw, 1.6rem);
+  z-index: 2;
+  transform: translateY(12px);
+  opacity: 0;
+  transition:
+    transform 0.55s var(--ease),
+    opacity   0.55s var(--ease);
+}
+.work:hover .work-hover { transform: none; opacity: 1; }
+
+.work-hover-no {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.26em;
+  color: var(--court);
+  margin-bottom: 0.45rem;
+}
+.work-hover-name {
+  display: block;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  color: #fff;
+  line-height: 1.15;
+}
+.work-hover-sub {
+  display: block;
+  margin-top: 0.32rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, .55);
+}
+
+/* ── index badge ─────────────────────────────────────────────── */
+.work-tag {
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 3;
+  padding: 0.55rem 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, .72);
+  background: rgba(10, 15, 22, .42);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  transition: color 0.35s, background 0.35s;
+}
+.work:hover .work-tag {
+  color: #fff;
+  background: rgba(200, 64, 46, .85);
+}
+
+/* ── caption below the plate ────────────────────────────────── */
+.work figcaption {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding-top: clamp(0.75rem, 1.2vw, 1.05rem);
+  border-top: 1px solid rgba(24, 32, 44, .09);
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity   0.65s var(--ease),
+    transform 0.65s var(--ease);
+}
+.work.in figcaption { opacity: 1; transform: none; }
+
+.work-no {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--court);
+}
+.work-meta b {
+  display: block;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+  line-height: 1.2;
+  color: var(--paper);
+}
+.work-meta i {
+  display: block;
+  margin-top: 0.22rem;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+  color: rgba(24, 32, 44, .45);
+}
+.work-meta s { text-decoration: none; opacity: .4; margin: 0 .35em; }
+
+/* ── stats bar above the grid ──────────────────────────────── */
+.works-meta-bar {
+  max-width: 1440px;
+  margin: clamp(2.5rem, 5vw, 4rem) auto clamp(2rem, 3.5vw, 3rem);
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(24, 32, 44, .10);
+  background: rgba(255, 255, 255, .55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.works-stat {
+  flex: 1;
+  padding: clamp(0.85rem, 1.6vw, 1.2rem) clamp(1rem, 2vw, 1.6rem);
+  border-right: 1px solid rgba(24, 32, 44, .10);
+}
+.works-stat:last-child { border-right: none; }
+.works-stat-value {
+  display: block;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  line-height: 1;
+  color: var(--paper);
+  letter-spacing: -0.02em;
+}
+.works-stat-label {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(24, 32, 44, .44);
+}
+
+/* ── footnote ───────────────────────────────────────────────── */
+.note {
+  max-width: 1440px;
+  margin: clamp(2.2rem, 4vw, 3.5rem) auto 0;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(24, 32, 44, .38);
+}
+.note::before {
+  content: '';
+  display: block; flex: none;
+  width: 1.75rem; height: 1px;
+  background: var(--court);
+}
+
+/* ── responsive ─────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .works {
+    grid-template-columns: 1fr;
+    row-gap: clamp(2rem, 4vw, 3rem);
+  }
+  .work:nth-child(n) { grid-column: 1 / -1; }
+  .work:nth-child(1) .work-plate { aspect-ratio: 16 / 9; }
+  .work:nth-child(n+2) .work-plate { aspect-ratio: 16 / 10; }
+  .works-meta-bar { flex-wrap: wrap; }
+  .works-stat { flex: 1 1 45%; }
+}
+
+@media (max-width: 560px) {
+  .works-meta-bar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-plate { clip-path: none !important; transition: box-shadow 0.3s; }
+  .work-plate::before { display: none; }
+  .work figcaption { opacity: 1 !important; transform: none !important; transition: none; }
+  .work:hover .work-plate img { transform: none; }
+  .work-hover { display: none; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav is-scrolled" id="nav">
+  <a class="mark" href="index.html" aria-label="Probity home">
+    <img src="assets/probity-wordmark.png" width="544" height="131"
+         alt="Probity — Property Management and Consultancy">
+    <span class="mark-tag" data-text="Property Management and Consultancy" aria-hidden="true"></span>
+  </a>
+
+  <nav class="links" aria-label="Primary">
+    <a href="index.html#licensing">Licensing</a>
+    <a href="gallery.html" aria-current="page">Gallery</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="sheet">
+    <i></i><i></i>
+  </button>
+</header>
+
+<div class="sheet" id="sheet">
+  <a href="index.html#licensing">Licensing</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<main>
+  <section class="section">
+    <div class="section-head">
+      <span class="label"><span>Selected work</span></span>
+
+      <h1>
+        <span class="reveal"><span style="animation-delay:.2s">Buildings we have</span></span>
+        <span class="reveal"><span style="animation-delay:.3s">carried <em>through</em>.</span></span>
+      </h1>
+
+      <span class="reveal">
+        <p class="lede" style="animation-delay:.5s">
+          Each of these passed the same register of approvals, certifications
+          and sign-offs before a single wall went up.
+        </p>
+      </span>
+    </div>
+
+    <!-- stats bar -->
+    <div class="works-meta-bar" role="list" aria-label="Portfolio statistics">
+      <div class="works-stat" role="listitem">
+        <span class="works-stat-value">07</span>
+        <span class="works-stat-label">Projects delivered</span>
+      </div>
+      <div class="works-stat" role="listitem">
+        <span class="works-stat-value">Bengaluru</span>
+        <span class="works-stat-label">Karnataka, India</span>
+      </div>
+      <div class="works-stat" role="listitem">
+        <span class="works-stat-value">2015&ndash;26</span>
+        <span class="works-stat-label">Portfolio span</span>
+      </div>
+      <div class="works-stat" role="listitem">
+        <span class="works-stat-value">100%</span>
+        <span class="works-stat-label">Approvals certified</span>
+      </div>
+    </div>
+
+    <div class="works">
+
+      <!-- 01 Brookfield — Lead Hero Plate -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/Brookfield.png" type="image/png">
+            <img src="assets/gallery/Brookfield.png" alt="Brookfield commercial complex, Bengaluru"
+                 width="1536" height="1024" loading="eager" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">01</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">01 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Brookfield</span>
+            <span class="work-hover-sub">Commercial complex &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">01</span>
+          <span class="work-meta">
+            <b>Brookfield</b>
+            <i>Commercial complex</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 02 DP World — Row 2, Left -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/DPWorld.png" type="image/png">
+            <img src="assets/gallery/DPWorld.png" alt="DP World logistics facility, Bengaluru"
+                 width="1448" height="1086" loading="eager" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">02</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">02 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">DP World</span>
+            <span class="work-hover-sub">Logistics facility &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">02</span>
+          <span class="work-meta">
+            <b>DP World</b>
+            <i>Logistics facility</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 03 Equinox Water Edge — Row 2, Right -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/EquinoxWaterEdge.png" type="image/png">
+            <img src="assets/gallery/EquinoxWaterEdge.png" alt="Equinox Water Edge, Bengaluru"
+                 width="1402" height="1122" loading="lazy" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">03</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">03 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Equinox Water Edge</span>
+            <span class="work-hover-sub">Residential &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">03</span>
+          <span class="work-meta">
+            <b>Equinox Water Edge</b>
+            <i>Residential complex</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 04 Peninsula Heights — Row 3, Left -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/PeninsulaHeightsJPNagar.png" type="image/png">
+            <img src="assets/gallery/PeninsulaHeightsJPNagar.png" alt="Peninsula Heights, JP Nagar, Bengaluru"
+                 width="1086" height="1448" loading="lazy" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">04</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">04 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Peninsula Heights</span>
+            <span class="work-hover-sub">JP Nagar &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">04</span>
+          <span class="work-meta">
+            <b>Peninsula Heights</b>
+            <i>JP Nagar <s>/</s> Residential</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 05 Purva Atmosphere — Row 3, Right -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/PurvaAtmosphere.png" type="image/png">
+            <img src="assets/gallery/PurvaAtmosphere.png" alt="Purva Atmosphere, Bengaluru"
+                 width="1086" height="1448" loading="lazy" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">05</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">05 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Purva Atmosphere</span>
+            <span class="work-hover-sub">Residential tower &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">05</span>
+          <span class="work-meta">
+            <b>Purva Atmosphere</b>
+            <i>Residential tower</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 06 Purva Bluebelle — Row 4, Left -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/PurvaBluebelle.png" type="image/png">
+            <img src="assets/gallery/PurvaBluebelle.png" alt="Purva Bluebelle, Bengaluru"
+                 width="1402" height="1122" loading="lazy" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">06</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">06 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Purva Bluebelle</span>
+            <span class="work-hover-sub">Residential &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">06</span>
+          <span class="work-meta">
+            <b>Purva Bluebelle</b>
+            <i>Residential complex</i>
+          </span>
+        </figcaption>
+      </figure>
+
+      <!-- 07 Purva Oakshire — Row 4, Right -->
+      <figure class="work">
+        <div class="work-plate">
+          <picture>
+            <source srcset="assets/gallery/PurvaOakshire.png" type="image/png">
+            <img src="assets/gallery/PurvaOakshire.png" alt="Purva Oakshire, Bengaluru"
+                 width="1535" height="1024" loading="lazy" decoding="async">
+          </picture>
+          <span class="work-tag" aria-hidden="true">07</span>
+          <div class="work-hover" aria-hidden="true">
+            <div class="work-hover-no">07 &nbsp;/&nbsp; 07</div>
+            <span class="work-hover-name">Purva Oakshire</span>
+            <span class="work-hover-sub">Residential community &nbsp;&middot;&nbsp; Bengaluru</span>
+          </div>
+        </div>
+        <figcaption>
+          <span class="work-no">07</span>
+          <span class="work-meta">
+            <b>Purva Oakshire</b>
+            <i>Residential community</i>
+          </span>
+        </figcaption>
+      </figure>
+
+    </div><!-- /.works -->
+
+    <p class="note">Photographs are of projects carried out under Probity&rsquo;s supervision.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-main">
+
+    <div class="foot-brand">
+      <img src="assets/probity-wordmark.png" width="544" height="131"
+           alt="Probity — Property Management and Consultancy">
+      <p>
+        Property management and consultancy in Bengaluru. Approvals,
+        execution and certification, carried from the first application
+        through to the final sign-off.
+      </p>
+    </div>
+
+    <div class="foot-col">
+      <h3>Site</h3>
+      <ul>
+        <li><a href="index.html#licensing">Licensing</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h3>Office</h3>
+      <address>
+        <span># 549 &ldquo;Kasturi Enclave&rdquo;</span>
+        <span>Narayananagar 1st Block</span>
+        <span>Doddakallsandra, Off Kanakpura Road</span>
+        <span>Bengaluru &ndash; 560062, Karnataka</span>
+      </address>
+    </div>
+
+    <div class="foot-col">
+      <h3>Direct</h3>
+      <ul>
+        <li><a href="tel:+919845724479">98457 24479</a></li>
+        <li><a href="tel:+919880323883">98803 23883</a></li>
+        <li><a href="mailto:Vidyasagar.khuba@gmail.com"><span class="foot-long">Vidyasagar.khuba@gmail.com</span><span class="foot-short">Email us</span></a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="foot-bar">
+    <div>
+      <small>Probity &copy; 2026<span class="foot-place"> &nbsp;&middot;&nbsp; Bengaluru, Karnataka</span></small>
+      <div class="foot-social">
+        <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Probity on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-6.9l-5.4-7-6.2 7H1.7l8.1-9.3L1 2h7.1l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20Z"/></svg></a>
+        <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="Probity on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.02h4.56V24H.22V8.02zM9.5 8.02h4.37v2.18h.06c.61-1.15 2.1-2.37 4.32-2.37 4.62 0 5.47 3.04 5.47 6.99V24h-4.56v-7.29c0-1.74-.03-3.98-2.43-3.98-2.43 0-2.8 1.9-2.8 3.85V24H9.5V8.02z"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var nav    = document.getElementById('nav');
+  var burger = document.getElementById('burger');
+  var sheet  = document.getElementById('sheet');
+  var calm   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  nav.classList.add('is-scrolled');
+
+  /* mobile menu */
+  burger.addEventListener('click', function(){
+    var open = sheet.classList.toggle('open');
+    nav.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.documentElement.classList.toggle('pcx-lock', open);
+  });
+  sheet.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') burger.click();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && sheet.classList.contains('open')) burger.click();
+  });
+
+  /* tagline typewriter */
+  var tag = document.querySelector('.mark-tag');
+  if (tag) {
+    var full = tag.getAttribute('data-text') || '';
+    if (calm) { tag.textContent = full; tag.classList.add('is-typed'); }
+    else {
+      var ch = 0;
+      setTimeout(function step(){
+        tag.textContent = full.slice(0, ++ch);
+        if (ch < full.length) setTimeout(step, 34 + Math.random() * 30);
+        else setTimeout(function(){ tag.classList.add('is-typed'); }, 900);
+      }, 900);
+    }
+  }
+
+  /* staggered grid reveal: row by row, left to right */
+  var works = document.querySelectorAll('.work');
+
+  var rows = [
+    [0],        /* Row 1: Brookfield hero */
+    [1, 2],     /* Row 2: DP World, Equinox */
+    [3, 4],     /* Row 3: Peninsula, Purva Atm */
+    [5, 6]      /* Row 4: Purva Bluebelle, Purva Oakshire */
+  ];
+
+  rows.forEach(function(group){
+    group.forEach(function(idx, posInRow){
+      if (works[idx]) {
+        works[idx].dataset.plateDelay   = posInRow * 150;
+        works[idx].dataset.captionDelay = posInRow * 150 + 650;
+      }
+    });
+  });
+
+  if (calm || !('IntersectionObserver' in window)) {
+    [].forEach.call(works, function(w){ w.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (!entry.isIntersecting) return;
+        var pDelay = entry.target.dataset.plateDelay   || 0;
+        var cDelay = entry.target.dataset.captionDelay || 650;
+        var plate  = entry.target.querySelector('.work-plate');
+        var cap    = entry.target.querySelector('figcaption');
+        if (plate) plate.style.transitionDelay = pDelay + 'ms';
+        if (cap)   cap.style.transitionDelay   = cDelay + 'ms';
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.10, rootMargin: '0px 0px -5%' });
+
+    [].forEach.call(works, function(w){ io.observe(w); });
+  }
+})();
+</script>
+
+<!-- ===================== CONTACT CARD ===================== -->
+<script type="importmap">
+{ "imports": { "three": "./assets/vendor/three.module.min.js" } }
+</script>
+<script type="module" src="assets/contact-card.js"></script>
+
+</body>
+</html>

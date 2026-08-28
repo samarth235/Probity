@@ -1,0 +1,375 @@
+/* ============================================================
+   PROBITY — contact card experience
+   A business card is dealt into a dark studio, then turns over
+   to reveal the note you write on the back of it.
+
+   Everything is namespaced .pcx- and carries its OWN palette:
+   the home page and the licensing page define --paper/--gold
+   with opposite meanings, so nothing here may inherit them.
+   ============================================================ */
+
+.pcx{
+  position:fixed; inset:0; z-index:200;
+  display:none;
+
+  --pcx-ink:    #0B0E13;
+  --pcx-paper:  #F6F1E7;   /* type on the scrim, over the blurred page */
+  --pcx-sand:   #E7D3AE;
+  --pcx-red:    #C8102E;
+  --pcx-rule:   rgba(231,211,174,.20);
+
+  /* the back of the card is the same stock as its printed face —
+     white card, ink type — so turning it over does not turn the
+     lights out                                                    */
+  --pcx-plate:      #FFFFFF;
+  --pcx-plate-ink:  #16202B;
+  --pcx-plate-mute: rgba(24,32,44,.60);
+  --pcx-plate-soft: rgba(24,32,44,.42);
+  --pcx-plate-rule: rgba(24,32,44,.20);
+  --pcx-ease:   cubic-bezier(.22,.61,.36,1);
+
+  font-family:"Instrument Sans", system-ui, sans-serif;
+  color:var(--pcx-paper);
+  -webkit-font-smoothing:antialiased;
+}
+.pcx.is-open{ display:block; }
+
+/* the page behind, pushed back ------------------------------- */
+.pcx-scrim{
+  position:absolute; inset:0;
+  /* held deliberately off opaque: the point is that the page behind
+     is BLURRED, and a near-solid wash would just hide it. Enough
+     darkening remains to carry a white card off the white page.  */
+  background:radial-gradient(125% 95% at 50% 34%, rgba(11,15,22,.62), rgba(4,6,10,.86) 68%);
+  -webkit-backdrop-filter:blur(24px) saturate(115%);
+          backdrop-filter:blur(24px) saturate(115%);
+  opacity:0;
+  transition:opacity .6s var(--pcx-ease);
+}
+.pcx.is-in .pcx-scrim{ opacity:1; }
+
+/* the stage: WebGL underneath, the CSS3D layer exactly on top - */
+.pcx-stage{ position:absolute; inset:0; }
+.pcx-gl{ position:absolute; inset:0; display:block; width:100%; height:100%; }
+.pcx-css3d{ position:absolute; inset:0; pointer-events:none; }
+
+/* ---------- chrome ---------- */
+.pcx-chrome{
+  position:absolute; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem;
+  padding:clamp(1rem,3vh,1.9rem) clamp(1.1rem,4vw,2.4rem);
+  opacity:0; transform:translateY(-8px);
+  transition:opacity .6s var(--pcx-ease) .25s, transform .6s var(--pcx-ease) .25s;
+}
+.pcx.is-in .pcx-chrome{ opacity:1; transform:none; }
+
+.pcx-eyebrow{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.66rem; letter-spacing:.34em; text-transform:uppercase;
+  color:rgba(231,211,174,.70);
+}
+.pcx-eyebrow s{ text-decoration:none; opacity:.45; margin:0 .5em; }
+
+.pcx-close{
+  appearance:none; -webkit-appearance:none;
+  width:42px; height:42px; flex:none;
+  display:grid; place-items:center;
+  background:transparent; color:var(--pcx-paper);
+  border:1px solid var(--pcx-rule); border-radius:50%;
+  cursor:pointer;
+  transition:border-color .3s, background .3s, transform .3s var(--pcx-ease);
+}
+.pcx-close:hover{ background:rgba(231,211,174,.10); border-color:rgba(231,211,174,.42); transform:rotate(90deg); }
+.pcx-close svg{ width:14px; height:14px; }
+
+/* ---------- the hint / turn control ---------- */
+.pcx-foot{
+  position:absolute; left:0; right:0; bottom:0;
+  display:flex; flex-direction:column; align-items:center; gap:.85rem;
+  padding:0 1.2rem clamp(1.2rem,4vh,2.4rem);
+  opacity:0; transform:translateY(10px);
+  transition:opacity .6s var(--pcx-ease) .5s, transform .6s var(--pcx-ease) .5s;
+}
+.pcx.is-in .pcx-foot{ opacity:1; transform:none; }
+/* once the card has turned, the control belongs to the card itself */
+.pcx.is-turning .pcx-foot,
+.pcx.is-back    .pcx-foot{ opacity:0; transform:translateY(10px); transition-delay:0s; pointer-events:none; }
+
+.pcx-turn{
+  appearance:none; -webkit-appearance:none;
+  display:inline-flex; align-items:center; gap:.7rem;
+  padding:.9rem 1.5rem;
+  background:transparent; color:var(--pcx-paper);
+  border:1px solid var(--pcx-rule); border-radius:2px;
+  font:inherit; font-size:.78rem; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase;
+  cursor:pointer;
+  transition:border-color .35s, background .35s, gap .35s var(--pcx-ease);
+}
+.pcx-turn:hover{ background:rgba(231,211,174,.09); border-color:rgba(231,211,174,.45); gap:1rem; }
+.pcx-turn svg{ width:16px; height:12px; flex:none; }
+
+.pcx-note{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(231,211,174,.42);
+}
+
+/* ============================================================
+   THE BACK OF THE CARD
+   Sized in JS to the exact pixel footprint of the card face, so
+   the type inside renders 1:1 and stays sharp through CSS3D.
+   ============================================================ */
+.pcx-back{
+  position:relative;
+  box-sizing:border-box;
+  container-type:inline-size;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+  padding:clamp(18px,3.4%,30px);
+  background:linear-gradient(152deg, #FFFFFF 0%, #FBFCFD 62%, #F4F6F9 100%);
+  color:var(--pcx-plate-ink);
+  border:1px solid rgba(24,32,44,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),
+              0 42px 90px -34px rgba(0,0,0,.8);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .5s var(--pcx-ease);
+}
+.pcx.is-back .pcx-back{ pointer-events:auto; }
+.pcx-back.is-lit{ opacity:1; }
+
+/* a hairline rule down the plate, echoing the printed card */
+.pcx-back::after{
+  content:""; position:absolute; top:0; bottom:0; left:0; width:2px;
+  background:linear-gradient(180deg, transparent, var(--pcx-red) 22%, var(--pcx-red) 78%, transparent);
+  opacity:.85;
+}
+
+.pcx-head{ flex:none; }
+.pcx-kicker{
+  display:block;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.58rem; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--pcx-plate-soft);
+  margin-bottom:.5rem;
+}
+.pcx-title{
+  margin:0;
+  font-family:"Prata", Georgia, serif;
+  font-weight:400; font-size:clamp(1.02rem,4.4cqi,1.6rem);
+  line-height:1.15; letter-spacing:.01em;
+  color:var(--pcx-plate-ink);
+}
+.pcx-title em{ font-style:normal; color:var(--pcx-red); }
+
+/* ---------- form ---------- */
+.pcx-form{
+  flex:1 1 auto; min-height:0;
+  display:flex; flex-direction:column; gap:clamp(10px,1.8%,16px);
+  margin-top:clamp(12px,2.6%,20px);
+}
+/* the columns split or stack on the plate's own width, not the page's */
+.pcx-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:clamp(12px,2.4%,22px); }
+
+/* the message takes whatever height the plate has left over */
+.pcx-msg{ flex:1 1 auto; min-height:0; }
+.pcx-msg textarea{ flex:1 1 auto; min-height:54px; }
+
+.pcx-field{ position:relative; display:flex; flex-direction:column; }
+.pcx-field label{
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.56rem; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--pcx-plate-soft);
+  margin-bottom:.36rem;
+  transition:color .3s;
+}
+.pcx-field input,
+.pcx-field textarea{
+  width:100%;
+  appearance:none; -webkit-appearance:none;
+  background:transparent; color:var(--pcx-plate-ink);
+  border:0; border-bottom:1px solid var(--pcx-plate-rule);
+  border-radius:0;
+  padding:.34rem 0 .46rem;
+  font:inherit; font-size:.86rem; line-height:1.45;
+  transition:border-color .35s var(--pcx-ease);
+}
+.pcx-field textarea{ resize:none; }
+.pcx-field input::placeholder,
+.pcx-field textarea::placeholder{ color:rgba(24,32,44,.30); }
+.pcx-field input:focus,
+.pcx-field textarea:focus{ outline:none; border-bottom-color:var(--pcx-red); }
+.pcx-field:focus-within label{ color:var(--pcx-red); }
+.pcx-field.is-bad input,
+.pcx-field.is-bad textarea{ border-bottom-color:var(--pcx-red); }
+.pcx-field .pcx-err{
+  position:absolute; right:0; top:0;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.55rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--pcx-red);
+  opacity:0; transition:opacity .3s;
+}
+.pcx-field.is-bad .pcx-err{ opacity:1; }
+
+/* ---------- form footer ---------- */
+.pcx-actions{
+  flex:none;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:1rem;
+  margin-top:auto; padding-top:clamp(12px,2.4%,18px);
+}
+.pcx-direct{ display:flex; flex-direction:column; gap:.28rem; min-width:0; }
+.pcx-direct a{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.62rem; letter-spacing:.1em;
+  color:var(--pcx-plate-mute);
+  text-decoration:none;
+  transition:color .3s;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.pcx-direct a:hover{ color:var(--pcx-plate-ink); }
+.pcx-direct svg{ width:11px; height:11px; flex:none; opacity:.7; }
+
+.pcx-send{
+  appearance:none; -webkit-appearance:none;
+  flex:none;
+  display:inline-flex; align-items:center; gap:.65rem;
+  padding:.78rem 1.35rem;
+  background:var(--pcx-red); color:#FFF;
+  border:1px solid var(--pcx-red); border-radius:2px;
+  font:inherit; font-size:.72rem; font-weight:600;
+  letter-spacing:.15em; text-transform:uppercase;
+  cursor:pointer;
+  transition:background .35s, gap .35s var(--pcx-ease), transform .35s var(--pcx-ease);
+}
+.pcx-send:hover{ background:#A70C25; gap:.9rem; }
+.pcx-send:active{ transform:translateY(1px); }
+.pcx-send svg{ width:15px; height:10px; flex:none; }
+
+/* the way back to the printed face */
+.pcx-return{
+  position:absolute; right:clamp(14px,2.6%,24px); top:clamp(14px,2.6%,24px);
+  appearance:none; -webkit-appearance:none;
+  display:inline-flex; align-items:center; gap:.45rem;
+  background:transparent; border:0; padding:.3rem;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.55rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--pcx-plate-soft);
+  cursor:pointer; transition:color .3s;
+}
+.pcx-return:hover{ color:var(--pcx-red); }
+.pcx-return svg{ width:13px; height:9px; }
+
+/* ============================================================
+   SEALED — the confirmation, struck like a seal on the plate
+   ============================================================ */
+.pcx-sealed{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:.9rem; padding:clamp(18px,5%,34px);
+  text-align:center;
+  background:linear-gradient(152deg, #FFFFFF 0%, #FBFCFD 62%, #F4F6F9 100%);
+  color:var(--pcx-plate-ink);
+  opacity:0; visibility:hidden;
+  transition:opacity .5s var(--pcx-ease), visibility .5s;
+}
+.pcx-back.is-sealed .pcx-sealed{ opacity:1; visibility:visible; }
+
+.pcx-seal{ width:60px; height:60px; overflow:visible; }
+.pcx-seal circle,.pcx-seal path{
+  fill:none; stroke:var(--pcx-red); stroke-width:1.3; stroke-linecap:round;
+  stroke-dasharray:var(--len,120); stroke-dashoffset:var(--len,120);
+}
+.pcx-back.is-sealed .pcx-seal circle,
+.pcx-back.is-sealed .pcx-seal path{ animation:pcxDraw 1.5s var(--pcx-ease) .15s forwards; }
+.pcx-back.is-sealed .pcx-seal .inner{ animation-delay:.5s; }
+@keyframes pcxDraw{ to{ stroke-dashoffset:0; } }
+
+.pcx-sealed h3{
+  margin:0;
+  font-family:"Prata", Georgia, serif;
+  font-weight:400; font-size:clamp(1.05rem,3vw,1.4rem); line-height:1.2;
+}
+.pcx-sealed p{
+  margin:0; max-width:38ch;
+  font-size:.8rem; line-height:1.6; color:var(--pcx-plate-mute);
+}
+.pcx-again{
+  margin-top:.4rem;
+  appearance:none; -webkit-appearance:none;
+  background:transparent; color:var(--pcx-plate-ink);
+  border:1px solid var(--pcx-plate-rule); border-radius:2px;
+  padding:.68rem 1.2rem;
+  font:inherit; font-size:.68rem; font-weight:500;
+  letter-spacing:.15em; text-transform:uppercase;
+  cursor:pointer; transition:border-color .3s, background .3s;
+}
+.pcx-again:hover{ background:rgba(24,32,44,.05); border-color:rgba(24,32,44,.42); }
+
+/* ============================================================
+   NO-WEBGL FALLBACK — the same card, turned with plain CSS
+   ============================================================ */
+.pcx-flat{
+  position:absolute; inset:0;
+  display:none; align-items:center; justify-content:center;
+  padding:clamp(3.5rem,12vh,6rem) 1rem;
+  perspective:1600px;
+}
+.pcx.is-flat .pcx-flat{ display:flex; }
+.pcx.is-flat .pcx-stage{ display:none; }
+
+.pcx-flipper{
+  position:relative;
+  transform-style:preserve-3d;
+  transform:rotateY(0deg);
+  transition:transform 1.15s var(--pcx-ease);
+}
+.pcx.is-flat.is-back .pcx-flipper{ transform:rotateY(180deg); }
+.pcx-flipper > *{ -webkit-backface-visibility:hidden; backface-visibility:hidden; }
+
+.pcx-flat-front{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  background:#FFF;
+  box-shadow:0 40px 90px rgba(0,0,0,.6);
+  cursor:pointer;
+}
+.pcx-flat-front img{ display:block; width:100%; height:auto; }
+.pcx.is-flat .pcx-back{
+  transform:rotateY(180deg);
+  box-shadow:0 40px 90px rgba(0,0,0,.6);
+}
+
+/* ============================================================
+   NARROW SCREENS
+   ============================================================ */
+@container (max-width:520px){
+  .pcx-actions{ flex-direction:column; align-items:stretch; gap:.75rem; }
+  .pcx-send{ justify-content:center; }
+  .pcx-direct{ order:2; }
+}
+/* fallback for engines without container queries */
+@supports not (container-type:inline-size){
+  @media (max-width:760px){
+    .pcx-actions{ flex-direction:column; align-items:stretch; gap:.75rem; }
+    .pcx-send{ justify-content:center; }
+    .pcx-direct{ order:2; }
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — the card still turns, it just stops performing
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .pcx-scrim,.pcx-chrome,.pcx-foot,.pcx-back,.pcx-sealed{ transition-duration:.001ms !important; }
+  .pcx-flipper{ transition-duration:.001ms !important; }
+  .pcx-close:hover{ transform:none; }
+  .pcx-back.is-sealed .pcx-seal circle,
+  .pcx-back.is-sealed .pcx-seal path{ animation:none; stroke-dashoffset:0; }
+}
+
+/* the page is held still while the card is up. This lives on <html>
+   because both pages' menu scripts clear body's inline overflow.    */
+html.pcx-lock, html.pcx-lock body{ overflow:hidden; }

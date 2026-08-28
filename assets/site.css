@@ -1,0 +1,390 @@
+/* ============================================================
+   PROBITY — the shell
+   Tokens, the reset, the nav, the section furniture and the foot.
+   Shared by every page so the two can no longer drift apart; each
+   page keeps only what is genuinely its own in a <style> block.
+   ============================================================ */
+
+/* tokens copied verbatim from index.html so the two pages can't drift */
+:root{
+  /* This page runs light where the home page runs dark. A register of
+     seals belongs on paper. The ground is a near-white held just off
+     pure white, so the white plates below still read as cards lifted
+     off it rather than dissolving into it.                          */
+  --ink:        #F7F8FA;   /* the ground — a cool near-white     */
+  --ink-deep:   #EFF1F5;   /* the ground, one step down          */
+  --slate:      #16202B;
+  /* --sandstone is deliberately unused on this page — the register
+     runs on ink and the one court red, no gold */
+  --paper:      #16202B;   /* primary type                        */
+  --gold:       #16202B;   /* interactive — ink, not white        */
+  --court:      #C8402E;
+
+  --display: "Prata", Georgia, serif;
+  --body:    "Instrument Sans", system-ui, sans-serif;
+  --mono:    "IBM Plex Mono", ui-monospace, monospace;
+
+  --rule: rgba(24,32,44,.14);
+  --gut: clamp(1.25rem, 5vw, 5rem);
+  --nav-h: 84px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  background:var(--ink);
+  /* a long, slow warming toward the foot so the field isn't flat */
+  background-image:linear-gradient(178deg,#FDFDFE 0%,var(--ink) 52%,var(--ink-deep) 100%);
+  background-attachment:fixed;
+  color:var(--paper);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.55;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{ color:inherit; text-decoration:none; }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:4px; border-radius:2px; }
+
+/* ============================================================
+   NAV — identical to the home page, except there is no
+   photograph behind it here, so it carries a fill from the start.
+   ============================================================ */
+
+.nav{
+  position:fixed; inset:0 0 auto 0; z-index:60;
+  height:var(--nav-h);
+  display:flex; align-items:center; gap:2rem;
+  padding:0 var(--gut);
+  background:rgba(253,253,254,.82);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--rule);
+  transition:height .5s var(--ease), background .5s var(--ease),
+             border-color .5s var(--ease), backdrop-filter .5s var(--ease);
+  transform:translateY(-100%);
+  animation:navDrop 1s var(--ease) .15s forwards;
+}
+@keyframes navDrop{ to{ transform:translateY(0); } }
+.nav.is-scrolled{ height:66px; }
+
+/* wordmark: the Probity logo plate, set hard against the left gutter.
+   The plate is trimmed to its own edges, so height alone sizes it and
+   the black ground reads as a deliberate block on the paper nav.     */
+.mark{
+  display:flex; flex-direction:column; align-items:flex-start;
+  gap:.32rem; margin-right:auto;
+}
+.mark img{
+  display:block;
+  height:34px; width:auto;
+  opacity:0; transform:translateY(5px);
+  animation:markIn 1.1s var(--ease) .6s forwards;
+  transition:height .5s var(--ease);
+}
+@keyframes markIn{ to{ opacity:1; transform:none; } }
+.nav.is-scrolled .mark img{ height:30px; }
+
+/* the lockup's second line, restored as live type under the plate.
+   It types itself in, so the line reserves its own height up front
+   and the nav never reflows while the characters land.            */
+.mark-tag{
+  display:block;
+  min-height:8px; line-height:8px;
+  font-size:7px; letter-spacing:.015em;
+  color:rgba(24,32,44,.60);
+  white-space:nowrap;
+  transition:opacity .4s var(--ease), color .3s;
+}
+.mark:hover .mark-tag{ color:rgba(24,32,44,.85); }
+
+/* the carriage — blinks while typing, then leaves */
+.mark-tag::after{
+  content:"";
+  display:inline-block;
+  width:1px; height:7px;
+  margin-left:2px; vertical-align:-1px;
+  background:var(--court);
+  animation:markCaret 1s steps(1) infinite;
+}
+.mark-tag.is-typed::after{ display:none; }
+
+@keyframes markCaret{ 50%{ opacity:0; } }
+
+/* the plate condenses on scroll; the line goes with it */
+.nav.is-scrolled .mark-tag{ opacity:.72; }
+
+@media (max-width:400px){
+  /* below this the line crowds the burger — the plate carries it alone */
+  .mark-tag{ display:none; }
+}
+
+.links{ display:flex; gap:2.3rem; align-items:center; }
+.links a{
+  position:relative;
+  font-size:.83rem; letter-spacing:.09em; text-transform:uppercase;
+  font-weight:500; color:rgba(24,32,44,.74);
+  transition:color .3s;
+  padding:.4rem 0;
+}
+.links a::after{
+  content:""; position:absolute; left:0; bottom:0;
+  height:1px; width:100%; background:var(--gold);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .45s var(--ease);
+}
+.links a:hover{ color:var(--paper); }
+.links a:hover::after{ transform:scaleX(1); }
+/* the page you're on keeps its rule drawn */
+.links a[aria-current="page"]{ color:var(--paper); }
+.links a[aria-current="page"]::after{ transform:scaleX(1); }
+
+.burger{
+  display:none; width:42px; height:42px; border:1px solid var(--rule);
+  background:none; cursor:pointer; padding:0; position:relative;
+}
+.burger i{
+  position:absolute; left:11px; width:20px; height:1.5px; background:var(--paper);
+  transition:transform .4s var(--ease), opacity .25s;
+}
+.burger i:nth-child(1){ top:15px; } .burger i:nth-child(2){ top:25px; }
+.nav.menu-open .burger i:nth-child(1){ transform:translateY(5px) rotate(45deg); }
+.nav.menu-open .burger i:nth-child(2){ transform:translateY(-5px) rotate(-45deg); }
+
+.sheet{
+  position:fixed; inset:0; z-index:55;
+  background:rgba(253,253,254,.97);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  display:flex; flex-direction:column; justify-content:center; gap:.4rem;
+  padding:0 var(--gut);
+  clip-path:inset(0 0 100% 0); transition:clip-path .6s var(--ease);
+}
+.sheet.open{ clip-path:inset(0 0 0 0); }
+.sheet a{
+  font-family:var(--display); font-weight:400; font-size:2.1rem;
+  padding:.5rem 0; border-bottom:1px solid rgba(24,32,44,.10);
+  opacity:0; transform:translateY(14px); transition:all .5s var(--ease);
+}
+.sheet.open a{ opacity:1; transform:none; }
+.sheet.open a:nth-child(1){ transition-delay:.14s; }
+.sheet.open a:nth-child(2){ transition-delay:.20s; }
+.sheet.open a:nth-child(3){ transition-delay:.26s; }
+.sheet.open a:nth-child(4){ transition-delay:.32s; }
+/* ============================================================
+   PAGE HEAD
+   ============================================================ */
+.section{ position:relative; padding:clamp(4rem,8vw,7rem) var(--gut); }
+/* the band below carries the nav offset now, so the section starts flush */
+.page-head{ padding-top:0; }
+.section-head{ max-width:1440px; margin:0 auto; }
+
+/* ---------- head type, and the way it arrives ----------
+   Same mechanism as the home page: every line sits in a mask
+   and is pushed up from behind it, so the copy appears to be
+   set onto the photograph rather than faded over it. The
+   delays are already carried inline on the markup — the
+   headline at .66/.76s, the lede at 1.05s — which lets the
+   band settle first and the type land on a still picture. */
+.reveal{ overflow:hidden; display:block; }
+.reveal > *{
+  display:block;
+  transform:translateY(115%);
+  animation:rise 1.15s var(--ease) forwards;
+}
+@keyframes rise{ to{ transform:translateY(0); } }
+
+.label{ overflow:hidden; display:block; }
+.label span{
+  display:inline-block;
+  font-family:var(--mono); font-size:.72rem; font-weight:500;
+  text-transform:uppercase; color:rgba(24,32,44,.62);
+  letter-spacing:.42em;
+  transform:translateY(115%);
+  animation:rise 1.1s var(--ease) .5s forwards,
+            tighten 1.6s var(--ease) .5s forwards;
+}
+@keyframes tighten{ to{ letter-spacing:.24em; } }
+
+.section-head h1{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(2.4rem,5.4vw,4.9rem);
+  line-height:1.0;
+  letter-spacing:-.028em;
+  margin:1.5rem 0 0;
+  max-width:22ch;
+  text-wrap:balance;
+}
+/* Prata has a single weight, so the emphasis carries on the rule
+   beneath it alone rather than on a synthesised bold — the headline
+   stays one ink and one weight. */
+.section-head h1 em{
+  font-style:normal;
+  position:relative;
+}
+/* the rule under the emphasis draws itself once the line has landed */
+.section-head h1 em::after{
+  content:""; position:absolute; left:0; right:0; bottom:.06em; height:2px;
+  background:var(--court);
+  transform:scaleX(0); transform-origin:left;
+  animation:drawRule 1.1s var(--ease) 1.6s forwards;
+}
+@keyframes drawRule{ to{ transform:scaleX(1); } }
+
+.lede{
+  margin:1.7rem 0 0; max-width:56ch;
+  font-size:clamp(1rem,1.3vw,1.14rem);
+  color:rgba(24,32,44,.80);
+}
+
+/* ============================================================
+   FOOT
+   The particulars, set the way the register sets an authority:
+   a mounted mark, then the details beneath it in mono. A single
+   court-red rule runs the full width at the head of it — the same
+   red as the card's painted edge — so the foot reads as the end
+   of the document rather than as leftover space.
+   ============================================================ */
+.foot{
+  margin-top:clamp(4rem,8vw,7rem);
+  background:var(--ink-deep);
+  border-top:2px solid var(--court);
+}
+
+.foot-main{
+  max-width:1440px; margin:0 auto;
+  padding:clamp(2.8rem,6vw,4.5rem) var(--gut) clamp(2.2rem,4vw,3.2rem);
+  display:grid;
+  /* not four equal columns: the address needs a wider measure than
+     the three-word link list beside it, or 'Off Kanakpura Road'
+     breaks and leaves 'Road' stranded on a line of its own */
+  grid-template-columns:
+    minmax(240px,1.45fr)   /* the mark and what it stands for */
+    minmax(120px,.8fr)     /* site   */
+    minmax(210px,1.3fr)    /* office */
+    minmax(170px,1fr);     /* direct */
+  gap:clamp(2rem,4vw,3.5rem);
+}
+
+/* ---------- the mark and what it stands for ---------- */
+.foot-brand img{ display:block; height:28px; width:auto; }
+.foot-brand p{
+  margin:1.1rem 0 0; max-width:34ch;
+  font-size:.84rem; line-height:1.65; color:rgba(24,32,44,.62);
+}
+
+/* ---------- columns ---------- */
+.foot-col h3{
+  margin:0 0 1.15rem;
+  font-family:var(--mono);
+  font-size:.6rem; letter-spacing:.26em; text-transform:uppercase;
+  color:var(--paper); font-weight:500;
+}
+/* a short red stroke above each heading, echoing the rule at the top */
+.foot-col h3::before{
+  content:""; display:block;
+  width:14px; height:2px; margin-bottom:.75rem;
+  background:var(--court);
+}
+
+.foot-col ul{ list-style:none; margin:0; padding:0; }
+.foot-col li + li{ margin-top:.72rem; }
+
+.foot-col a,
+.foot-col span{
+  display:inline-block;
+  font-size:.84rem; line-height:1.5;
+  color:rgba(24,32,44,.66);
+}
+.foot-col a{
+  position:relative;
+  transition:color .3s var(--ease), transform .3s var(--ease);
+}
+/* the hairline draws in from the left rather than simply appearing */
+.foot-col a::after{
+  content:""; position:absolute; left:0; right:0; bottom:-2px; height:1px;
+  background:var(--court);
+  transform:scaleX(0); transform-origin:0 50%;
+  transition:transform .4s var(--ease);
+}
+.foot-col a:hover{ color:var(--paper); }
+.foot-col a:hover::after{ transform:scaleX(1); }
+
+.foot-col address{ font-style:normal; }
+.foot-col address span{ display:block; }
+
+/* ---------- the bar ---------- */
+.foot-bar{
+  border-top:1px solid var(--rule);
+}
+.foot-bar > div{
+  max-width:1440px; margin:0 auto;
+  padding:1.4rem var(--gut);
+  display:flex; flex-wrap:wrap; gap:1rem;
+  align-items:center; justify-content:space-between;
+}
+.foot-bar small{
+  font-family:var(--mono); font-size:.63rem; letter-spacing:.2em;
+  text-transform:uppercase; color:rgba(24,32,44,.5);
+}
+
+/* the two accounts, mounted the way the nav's controls are —
+   a bordered plate rather than a bare glyph on the ground */
+.foot-social{ display:flex; gap:.6rem; }
+.foot-social a{
+  width:38px; height:38px; flex:none;
+  display:grid; place-items:center;
+  border:1px solid var(--rule); border-radius:2px;
+  color:rgba(24,32,44,.6);
+  transition:color .3s, border-color .3s, background .3s, transform .3s var(--ease);
+}
+.foot-social a:hover{
+  color:#FFF; background:var(--court); border-color:var(--court);
+  transform:translateY(-2px);
+}
+.foot-social svg{ width:15px; height:15px; fill:currentColor; }
+
+/* ---------- narrow ----------
+   The mark takes the full width and the three columns stay side by
+   side beneath it, rather than stacking into one very long leg.
+   The type steps down so the address still breaks on whole words at
+   a third of a phone's width, and the email swaps to a short label
+   — the full address would break mid-word in a 98px column. */
+@media (max-width:1000px){
+  .foot-main{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .foot-brand{ grid-column:1 / -1; }
+}
+@media (max-width:560px){
+  .foot-main{ gap:1.9rem 1.25rem; }
+  .foot-col h3{ font-size:.54rem; letter-spacing:.18em; margin-bottom:.9rem; }
+  .foot-col a,
+  .foot-col span{ font-size:.74rem; }
+  .foot-col li + li{ margin-top:.6rem; }
+  .foot-brand p{ font-size:.8rem; }
+}
+
+/* The email is written out where there is room and labelled where
+   there is not. These selectors are deliberately specific: the
+   `.foot-col span` rule above sets a display of its own and would
+   otherwise win, leaving both labels on screen at once. */
+.foot-col a .foot-short{ display:none; }
+@media (max-width:560px){
+  .foot-col a .foot-long{ display:none; }
+  .foot-col a .foot-short{ display:inline; }
+  /* the town is already set in the Office column — dropping it here
+     keeps the line and the two accounts on one row */
+  .foot-bar .foot-place{ display:none; }
+  .foot-bar small{ font-size:.58rem; letter-spacing:.16em; }
+}
+@media (prefers-reduced-motion:reduce){
+  .foot-social a:hover{ transform:none; }
+  .foot-col a::after{ transition:none; }
+}
+
+@media (max-width:860px){
+  :root{ --nav-h:70px; }
+  .links{ display:none; }
+  .burger{ display:block; }
+}
