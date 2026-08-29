@@ -131,7 +131,7 @@
 }
 .work:hover .work-plate::after { opacity: 1; }
 .work:hover .work-plate {
-  box-shadow: 0 24px 56px -16px rgba(10, 15, 22, .45);
+  box-shadow: 0 24px 56px -16px rgba(200, 64, 46, .42);
 }
 
 /* ── hover overlay text ─────────────────────────────────────── */
@@ -207,6 +207,8 @@
     transform 0.65s var(--ease);
 }
 .work.in figcaption { opacity: 1; transform: none; }
+.work:hover figcaption { border-top-color: rgba(200, 64, 46, .56); }
+.work:hover .work-meta b { color: var(--court); }
 
 .work-no {
   font-family: var(--mono);
@@ -226,10 +228,11 @@
   display: block;
   margin-top: 0.22rem;
   font-style: normal;
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.09em;
-  color: rgba(24, 32, 44, .45);
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  color: rgba(24, 32, 44, .56);
 }
 .work-meta s { text-decoration: none; opacity: .4; margin: 0 .35em; }
 
@@ -243,6 +246,7 @@
   background: rgba(255, 255, 255, .55);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  border-top: 3px solid var(--court);
 }
 .works-stat {
   flex: 1;
@@ -259,6 +263,7 @@
   color: var(--paper);
   letter-spacing: -0.02em;
 }
+.works-stat:first-child .works-stat-value { color: var(--court); }
 .works-stat-label {
   display: block;
   margin-top: 0.3rem;
@@ -346,8 +351,6 @@
 <main>
   <section class="section">
     <div class="section-head">
-      <span class="label"><span>Selected work</span></span>
-
       <h1>
         <span class="reveal"><span style="animation-delay:.2s">Buildings we have</span></span>
         <span class="reveal"><span style="animation-delay:.3s">carried <em>through</em>.</span></span>

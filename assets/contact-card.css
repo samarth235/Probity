@@ -15,7 +15,7 @@
   --pcx-ink:    #0B0E13;
   --pcx-paper:  #F6F1E7;   /* type on the scrim, over the blurred page */
   --pcx-sand:   #E7D3AE;
-  --pcx-red:    #C8102E;
+  --pcx-red:    #C8402E;
   --pcx-rule:   rgba(231,211,174,.20);
 
   /* the back of the card is the same stock as its printed face —
@@ -80,7 +80,7 @@
   cursor:pointer;
   transition:border-color .3s, background .3s, transform .3s var(--pcx-ease);
 }
-.pcx-close:hover{ background:rgba(231,211,174,.10); border-color:rgba(231,211,174,.42); transform:rotate(90deg); }
+.pcx-close:hover{ background:rgba(200,64,46,.14); border-color:var(--pcx-red); transform:rotate(90deg); }
 .pcx-close svg{ width:14px; height:14px; }
 
 /* ---------- the hint / turn control ---------- */
@@ -107,7 +107,7 @@
   cursor:pointer;
   transition:border-color .35s, background .35s, gap .35s var(--pcx-ease);
 }
-.pcx-turn:hover{ background:rgba(231,211,174,.09); border-color:rgba(231,211,174,.45); gap:1rem; }
+.pcx-turn:hover{ background:rgba(200,64,46,.14); border-color:var(--pcx-red); gap:1rem; }
 .pcx-turn svg{ width:16px; height:12px; flex:none; }
 
 .pcx-note{
@@ -229,7 +229,7 @@
   transition:color .3s;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.pcx-direct a:hover{ color:var(--pcx-plate-ink); }
+.pcx-direct a:hover{ color:var(--pcx-red); }
 .pcx-direct svg{ width:11px; height:11px; flex:none; opacity:.7; }
 
 .pcx-send{
@@ -244,7 +244,7 @@
   cursor:pointer;
   transition:background .35s, gap .35s var(--pcx-ease), transform .35s var(--pcx-ease);
 }
-.pcx-send:hover{ background:#A70C25; gap:.9rem; }
+.pcx-send:hover{ background:#9F2F22; gap:.9rem; }
 .pcx-send:active{ transform:translateY(1px); }
 .pcx-send svg{ width:15px; height:10px; flex:none; }
 
@@ -306,7 +306,7 @@
   letter-spacing:.15em; text-transform:uppercase;
   cursor:pointer; transition:border-color .3s, background .3s;
 }
-.pcx-again:hover{ background:rgba(24,32,44,.05); border-color:rgba(24,32,44,.42); }
+.pcx-again:hover{ background:rgba(200,64,46,.08); border-color:var(--pcx-red); color:var(--pcx-red); }
 
 /* ============================================================
    NO-WEBGL FALLBACK — the same card, turned with plain CSS

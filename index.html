@@ -90,7 +90,7 @@
   transition:opacity .5s var(--ease), border-color .3s, color .3s;
 }
 .boot.is-ready .boot-skip{ opacity:1; pointer-events:auto; }
-.boot-skip:hover{ color:var(--paper); border-color:rgba(24,32,44,.42); }
+.boot-skip:hover{ color:var(--court); border-color:var(--court); }
 .boot-skip svg{ width:14px; height:9px; }
 
 /* ---------- the gate ----------
@@ -236,7 +236,8 @@ html.is-booting .label span{ animation-play-state:paused; }
 }
 .logo-cell:hover .plate{
   transform:translateY(-3px);
-  box-shadow:0 16px 30px -18px rgba(24,32,44,.6);
+  border-color:rgba(200,64,46,.48);
+  box-shadow:0 16px 30px -18px rgba(200,64,46,.58);
 }
 
 /* one optical box for every mark, with a per-logo trim so a
@@ -411,10 +412,77 @@ html.is-booting .label span{ animation-play-state:paused; }
         </p>
       </span>
     </div>
+
     </div><!-- /.head-band -->
 
     <div class="register" id="licensing">
       <div class="logo-grid">
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/GBA.jpeg" alt="Greater Bengaluru Authority" loading="eager" decoding="async" style="--s:.94">
+          </div>
+          <div class="meta">
+            <b>GBA</b>
+            <i>Greater Bengaluru Authority</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bda.webp" alt="Bangalore Development Authority" loading="eager" decoding="async" style="--s:.92">
+          </div>
+          <div class="meta">
+            <b>BDA</b>
+            <i>Bangalore Development Authority</i>
+            <span>Approved agency</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bbmp.png" alt="Bruhat Bengaluru Mahanagara Palike" loading="eager" decoding="async" style="--s:.88">
+          </div>
+          <div class="meta">
+            <b>BBMP</b>
+            <i>Bruhat Bengaluru Mahanagara Palike</i>
+            <span>Registered contractor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/bescom-logo.jpg" alt="Bangalore Electricity Supply Company Limited" loading="eager" decoding="async" style="--s:.96">
+          </div>
+          <div class="meta">
+            <b>BESCOM</b>
+            <i>Bangalore Electricity Supply Company Limited</i>
+            <span>Approved vendor</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/fire-emergency.jpg" alt="Karnataka Fire and Emergency Services" loading="eager" decoding="async" style="--s:.92">
+          </div>
+          <div class="meta">
+            <b>Fire &amp; Emergency</b>
+            <i>Karnataka Fire &amp; Emergency Services</i>
+            <span>Approved agency</span>
+          </div>
+        </div>
+
+        <div class="logo-cell">
+          <div class="plate">
+            <img src="assets/logos/kspcb.png" alt="Karnataka State Pollution Control Board" loading="eager" decoding="async" style="--s:.88">
+          </div>
+          <div class="meta">
+            <b>KSPCB</b>
+            <i>Karnataka State Pollution Control Board</i>
+            <span>Accredited consultant</span>
+          </div>
+        </div>
 
         <div class="logo-cell">
           <div class="plate">
@@ -457,17 +525,6 @@ html.is-booting .label span{ animation-play-state:paused; }
             <b>HAL</b>
             <i>Hindustan Aeronautics Limited</i>
             <span>Empanelled supplier</span>
-          </div>
-        </div>
-
-        <div class="logo-cell">
-          <div class="plate">
-            <img src="assets/logos/GBA.jpeg" alt="Greater Bengaluru Authority" loading="lazy" decoding="async" style="--s:.94">
-          </div>
-          <div class="meta">
-            <b>GBA</b>
-            <i>Greater Bengaluru Authority</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -558,17 +615,6 @@ html.is-booting .label span{ animation-play-state:paused; }
             <b>KPTCL</b>
             <i>Karnataka Power Transmission Corporation Limited</i>
             <span>Registered contractor</span>
-          </div>
-        </div>
-
-        <div class="logo-cell">
-          <div class="plate">
-            <img src="assets/logos/bescom-logo.jpg" alt="Bangalore Electricity Supply Company Limited" loading="lazy" decoding="async" style="--s:.96">
-          </div>
-          <div class="meta">
-            <b>BESCOM</b>
-            <i>Bangalore Electricity Supply Company Limited</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
