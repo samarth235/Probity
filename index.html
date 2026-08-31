@@ -19,9 +19,26 @@
    visitor asked for reduced motion — they get the page directly. */
 (function(){
   try{
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    /* The opening film is for arriving at the site: a fresh load or a
+       full page refresh. Returning from another page (e.g. clicking
+       "Licensing" back from the Gallery) should land on the page
+       directly, with no film. */
+    var seen = false;
+    try { seen = sessionStorage.getItem('probity-booted') === '1'; } catch(e){}
+
+    var navType = 'navigate';
+    try {
+      var entry = performance.getEntriesByType('navigation')[0];
+      if (entry && entry.type) navType = entry.type;
+      else if (performance.navigation && performance.navigation.type === 1) navType = 'reload';
+    } catch(e){}
+
+    if (navType === 'reload' || !seen){
       document.documentElement.className += ' is-booting';
     }
+    try { sessionStorage.setItem('probity-booted', '1'); } catch(e){}
   }catch(e){}
 })();
 </script>
@@ -127,11 +144,16 @@ html.is-booting .label span{ animation-play-state:paused; }
   padding:calc(var(--nav-h) + clamp(3.5rem,8vw,6.5rem)) var(--gut) clamp(3.5rem,7vw,6rem);
   /* a defined rectangle rather than a band whose height is an
      accident of the copy — the photograph gets a proportion to
-     fill and the type is centred inside it                      */
+     fill and the type is centred inside it. The rectangle is the
+     one the band has always had; only its ground has changed.   */
   min-height:clamp(360px,42vw,560px);
   display:flex; flex-direction:column; justify-content:center;
   overflow:hidden;
   isolation:isolate;
+  /* the band now runs dark — the photograph is developed down
+     into a near-black ground rather than bleached up into the
+     page, so the type sits on the picture as reversed-out ink   */
+  background:#101822;
 }
 .head-band > .section-head{ position:relative; z-index:2; width:100%; }
 
@@ -146,12 +168,17 @@ html.is-booting .label span{ animation-play-state:paused; }
 @keyframes bandOpen{ to{ clip-path:inset(0 0 0 0); } }
 
 .head-bg__img{
+  /* cover on the same inset the band always used, so the picture
+     still fills exactly this rectangle — nothing about the frame
+     grew, only the development                                  */
   position:absolute; inset:-3%;
-  background:url("assets/bangalore.png") center 55% / cover no-repeat;
-  /* the photograph is allowed to be a photograph. Enough of the
-     colour survives to read as a city; the wash below, not the
-     filter, is what buys the copy its contrast.                 */
-  filter:saturate(.78) contrast(1.02) brightness(1.01);
+  background:url("assets/bangalore.png") 50% 64% / cover no-repeat;
+  background-image:image-set(url("assets/bangalore.webp") type("image/webp"),
+                             url("assets/bangalore.png") type("image/png"));
+  /* the photograph is taken all the way to black-and-white and
+     printed down, so the wash has a monochrome ground to sit on
+     and the one court red in the grid is the only colour here    */
+  filter:grayscale(1) contrast(1.18) brightness(.8);
   animation:bandDrift 44s ease-in-out infinite alternate;
   transform-origin:58% 60%;
 }
@@ -167,23 +194,37 @@ html.is-booting .label span{ animation-play-state:paused; }
 .head-bg__wash{
   position:absolute; inset:0;
   background:
-    linear-gradient(to bottom,
-      rgba(247,248,250,.46) 0%,
-      rgba(247,248,250,.30) 45%,
-      rgba(247,248,250,.42) 82%,
-      rgba(247,248,250,.58) 100%),
-    linear-gradient(to right,
-      rgba(247,248,250,.90) 0%,
-      rgba(247,248,250,.72) 34%,
-      rgba(247,248,250,.30) 66%,
-      rgba(247,248,250,.12) 100%);
+    linear-gradient(to right, rgba(16,24,34,.94) 0%, rgba(16,24,34,.62) 46%, rgba(16,24,34,.34) 100%),
+    linear-gradient(to top, rgba(16,24,34,.88) 0%, rgba(16,24,34,0) 48%);
 }
+
+/* ---------- the column grid ----------
+   Six columns ruled over the picture in one faint light hairline,
+   so the band reads as a drawing sheet rather than as a photograph
+   with type on it. No colour runs here — the red is spent on the
+   headline rule alone. */
+.head-bg__grid{
+  position:absolute; inset:0; z-index:1;
+  display:grid; grid-template-columns:repeat(6,1fr);
+  pointer-events:none;
+}
+.head-bg__grid span{ border-right:1px solid rgba(247,248,250,.10); }
+.head-bg__grid span:last-child{ border-right:none; }
+
+/* ---------- the type, reversed out ----------
+   The shell sets this page's head type in dark ink on paper. The
+   band no longer is paper, so the head type inside it is restated
+   on the light side of the same palette. Scoped to .head-band so
+   every other section head is untouched. */
+.head-band .label span{ color:rgba(247,248,250,.66); }
+.head-band .section-head h1{ color:#F7F8FA; }
+.head-band .lede{ color:rgba(247,248,250,.78); }
 
 /* a hairline where the picture gives out, so the band has a
    defined foot rather than an indefinite smudge */
 .head-bg::after{
   content:""; position:absolute; left:0; right:0; bottom:0;
-  height:1px; background:var(--rule);
+  height:1px; background:rgba(247,248,250,.16);
 }
 /* ============================================================
    THE REGISTER
@@ -225,7 +266,7 @@ html.is-booting .label span{ animation-play-state:paused; }
    stays flat at rest                                            */
 .plate{
   position:relative;
-  height:118px; border-radius:3px;
+  height:126px; border-radius:3px;
   background:#FFFFFF;
   border:1px solid rgba(24,32,44,.10);
   box-shadow:0 8px 20px -16px rgba(24,32,44,.55);
@@ -246,7 +287,7 @@ html.is-booting .label span{ animation-play-state:paused; }
   /* an explicit cap, not a percentage — the plate's content area has
      no definite height for a percentage to resolve against, so a
      wide mark would render at its natural size and get cropped     */
-  max-height:76px; max-width:100%;
+  max-height:82px; max-width:100%;
   width:auto; height:auto; object-fit:contain;
   transform:scale(var(--s,1));
   /* multiply drops the opaque white ground the JPEG marks arrive
@@ -263,34 +304,38 @@ html.is-booting .label span{ animation-play-state:paused; }
      work — it clips the ground white while keeping the seal's ink
      dark, where brightness alone would just wash the whole thing
      out. Only RERA needs it; every other mark is already clean.  */
-  filter:saturate(.72) contrast(var(--crush,1)) brightness(var(--lift,1));
+  filter:saturate(.9) contrast(var(--crush,1)) brightness(var(--lift,1));
   transition:filter .5s var(--ease);
 }
 .logo-cell:hover .plate img{
   filter:contrast(var(--crush,1)) brightness(var(--lift,1));
 }
 
+/* the particulars are the part a visitor actually reads, so they
+   are set to be read: the abbreviation a step larger, the full
+   name near full-strength ink rather than a grey, and the
+   registration line lifted off the .55 it was whispering at. */
 .meta b{
   display:block; font-family:var(--display);
   font-variation-settings:"opsz" 24;
-  font-size:1.06rem; font-weight:600; letter-spacing:.01em;
-  color:var(--paper); line-height:1.2;
+  font-size:1.14rem; font-weight:600; letter-spacing:.01em;
+  color:var(--paper); line-height:1.22;
 }
 .meta i{
   display:block; font-style:normal;
-  font-size:.82rem; color:rgba(24,32,44,.6);
-  margin-top:.2rem; line-height:1.35;
+  font-size:.88rem; color:rgba(24,32,44,.82);
+  margin-top:.28rem; line-height:1.45;
 }
 .meta span{
-  display:block; font-family:var(--mono); font-size:.61rem;
-  letter-spacing:.15em; text-transform:uppercase;
-  color:rgba(24,32,44,.55);
+  display:block; font-family:var(--mono); font-size:.66rem;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:rgba(24,32,44,.72);
   /* auto, not a fixed gap — this is what drops the registration line
      to the foot of the cell so the rules line up across a row even
      when one authority's name runs to two lines. The breathing room
      above the rule comes from the padding instead.                */
   margin-top:auto; padding-top:.9rem;
-  border-top:1px solid rgba(24,32,44,.12);
+  border-top:1px solid rgba(24,32,44,.18);
 }
 
 .note{
@@ -308,20 +353,23 @@ html.is-booting .label span{ animation-play-state:paused; }
      the wash flattens out and carries the copy on its own */
   .head-bg__wash{
     background:linear-gradient(to bottom,
-      rgba(247,248,250,.72) 0%,
-      rgba(247,248,250,.62) 50%,
-      rgba(247,248,250,.74) 100%);
+      rgba(16,24,34,.58) 0%,
+      rgba(16,24,34,.72) 55%,
+      rgba(16,24,34,.90) 100%);
   }
+  /* six columns are too fine to read in a narrow band */
+  .head-bg__grid{ grid-template-columns:repeat(3,1fr); }
 }
 
 @media (max-width:520px){
   .head-band{ padding-bottom:clamp(2.5rem,6vw,3.5rem); min-height:300px; }
   .logo-grid{ grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:.85rem; }
   .logo-cell{ gap:.85rem; }
-  .plate{ height:88px; padding:.85rem 1rem; }
-  .plate img{ max-height:58px; }
-  .meta b{ font-size:.94rem; }
-  .meta i{ font-size:.76rem; }
+  .plate{ height:96px; padding:.85rem 1rem; }
+  .plate img{ max-height:64px; }
+  .meta b{ font-size:1.02rem; }
+  .meta i{ font-size:.82rem; }
+  .meta span{ font-size:.62rem; }
   /* the type lives on the inner span now, so the override has to
      land there — and the tighten keyframe has to be dropped, or it
      animates straight back over this narrower tracking */
@@ -394,11 +442,12 @@ html.is-booting .label span{ animation-play-state:paused; }
       <div class="head-bg" aria-hidden="true">
         <div class="head-bg__img"></div>
         <div class="head-bg__wash"></div>
+        <div class="head-bg__grid">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
 
     <div class="section-head">
-      <span class="label"><span>Approvals &amp; registrations</span></span>
-
       <h1>
         <span class="reveal"><span style="animation-delay:.66s">Cleared to work on</span></span>
         <span class="reveal"><span style="animation-delay:.76s">the <em>country's spine</em>.</span></span>
@@ -420,7 +469,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/GBA.jpeg" alt="Greater Bengaluru Authority" loading="eager" decoding="async" style="--s:.94">
+            <img src="assets/logos/GBA.webp" alt="Greater Bengaluru Authority" loading="eager" decoding="async" style="--s:.94">
           </div>
           <div class="meta">
             <b>GBA</b>
@@ -442,7 +491,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/bbmp.png" alt="Bruhat Bengaluru Mahanagara Palike" loading="eager" decoding="async" style="--s:.88">
+            <img src="assets/logos/bbmp.webp" alt="Bruhat Bengaluru Mahanagara Palike" loading="eager" decoding="async" style="--s:.88">
           </div>
           <div class="meta">
             <b>BBMP</b>
@@ -453,7 +502,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/bescom-logo.jpg" alt="Bangalore Electricity Supply Company Limited" loading="eager" decoding="async" style="--s:.96">
+            <img src="assets/logos/bescom-logo.webp" alt="Bangalore Electricity Supply Company Limited" loading="eager" decoding="async" style="--s:.96">
           </div>
           <div class="meta">
             <b>BESCOM</b>
@@ -464,7 +513,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/fire-emergency.jpg" alt="Karnataka Fire and Emergency Services" loading="eager" decoding="async" style="--s:.92">
+            <img src="assets/logos/fire-emergency.webp" alt="Karnataka Fire and Emergency Services" loading="eager" decoding="async" style="--s:.92">
           </div>
           <div class="meta">
             <b>Fire &amp; Emergency</b>
@@ -475,7 +524,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/kspcb.png" alt="Karnataka State Pollution Control Board" loading="eager" decoding="async" style="--s:.88">
+            <img src="assets/logos/kspcb.webp" alt="Karnataka State Pollution Control Board" loading="eager" decoding="async" style="--s:.88">
           </div>
           <div class="meta">
             <b>KSPCB</b>
@@ -486,7 +535,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/nhai.png" alt="National Highways Authority of India" loading="lazy" decoding="async">
+            <img src="assets/logos/nhai.webp" alt="National Highways Authority of India" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>NHAI</b>
@@ -497,7 +546,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/namma-metro.png" alt="Namma Metro — Bangalore Metro Rail Corporation" loading="lazy" decoding="async">
+            <img src="assets/logos/namma-metro.webp" alt="Namma Metro — Bangalore Metro Rail Corporation" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>BMRCL</b>
@@ -508,7 +557,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/aai.png" alt="Airports Authority of India" loading="lazy" decoding="async">
+            <img src="assets/logos/aai.webp" alt="Airports Authority of India" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>AAI</b>
@@ -519,7 +568,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/hal.png" alt="Hindustan Aeronautics Limited" loading="lazy" decoding="async">
+            <img src="assets/logos/hal.webp" alt="Hindustan Aeronautics Limited" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>HAL</b>
@@ -541,7 +590,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/rdpr.png" alt="Rural Development &amp; Panchayat Raj Department, Government of Karnataka" loading="lazy" decoding="async" style="--s:.92">
+            <img src="assets/logos/rdpr.webp" alt="Rural Development &amp; Panchayat Raj Department, Government of Karnataka" loading="lazy" decoding="async" style="--s:.92">
           </div>
           <div class="meta">
             <b>RDPR Karnataka</b>
@@ -552,7 +601,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/kiadb.jpeg" alt="Karnataka Industrial Area Development Board" loading="lazy" decoding="async">
+            <img src="assets/logos/kiadb.webp" alt="Karnataka Industrial Area Development Board" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>KIADB</b>
@@ -563,7 +612,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/rera.jpeg" alt="Karnataka Real Estate Regulatory Authority" loading="lazy" decoding="async" style="--s:1;--crush:1.5;--lift:1.12">
+            <img src="assets/logos/rera.webp" alt="Karnataka Real Estate Regulatory Authority" loading="lazy" decoding="async" style="--s:1;--crush:1.5;--lift:1.12">
           </div>
           <div class="meta">
             <b>RERA Karnataka</b>
@@ -574,7 +623,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/geological_survey_of_india.jpeg" alt="Geological Survey of India" loading="lazy" decoding="async">
+            <img src="assets/logos/geological_survey_of_india.webp" alt="Geological Survey of India" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>GSI</b>
@@ -585,7 +634,7 @@ html.is-booting .label span{ animation-play-state:paused; }
 
         <div class="logo-cell">
           <div class="plate">
-            <img src="assets/logos/MoEFCC.jpg" alt="Ministry of Environment, Forest and Climate Change" loading="lazy" decoding="async">
+            <img src="assets/logos/MoEFCC.webp" alt="Ministry of Environment, Forest and Climate Change" loading="lazy" decoding="async">
           </div>
           <div class="meta">
             <b>MoEFCC</b>
@@ -609,7 +658,7 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="plate">
             <!-- a thin-line seal, unlike a solid one, needs every pixel
                  of the plate — the linework disappears if it is trimmed -->
-            <img src="assets/logos/kptcl.png" alt="Karnataka Power Transmission Corporation Limited" loading="lazy" decoding="async" style="--s:1.06">
+            <img src="assets/logos/kptcl.webp" alt="Karnataka Power Transmission Corporation Limited" loading="lazy" decoding="async" style="--s:1.06">
           </div>
           <div class="meta">
             <b>KPTCL</b>
@@ -631,7 +680,6 @@ html.is-booting .label span{ animation-play-state:paused; }
       </div>
     </div>
 
-    <p class="note">Marks shown are the property of their respective authorities.</p>
   </section>
 
 </main>
@@ -684,8 +732,8 @@ html.is-booting .label span{ animation-play-state:paused; }
       <small>Probity &copy; 2026<span class="foot-place"> &nbsp;&middot;&nbsp; Bengaluru, Karnataka</span></small>
       <!-- TODO: swap in the real profile URLs -->
       <div class="foot-social">
-        <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Probity on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-6.9l-5.4-7-6.2 7H1.7l8.1-9.3L1 2h7.1l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20Z"/></svg></a>
-        <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="Probity on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.02h4.56V24H.22V8.02zM9.5 8.02h4.37v2.18h.06c.61-1.15 2.1-2.37 4.32-2.37 4.62 0 5.47 3.04 5.47 6.99V24h-4.56v-7.29c0-1.74-.03-3.98-2.43-3.98-2.43 0-2.8 1.9-2.8 3.85V24H9.5V8.02z"/></svg></a>
+        <a href="https://x.com/VidyasagarKhuba" target="_blank" rel="noopener noreferrer" aria-label="Vidyasagar Khuba on X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-6.9l-5.4-7-6.2 7H1.7l8.1-9.3L1 2h7.1l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20Z"/></svg></a>
+        <a href="https://in.linkedin.com/in/vidyasagar-khuba-74192965" target="_blank" rel="noopener noreferrer" aria-label="Vidyasagar Khuba on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.02h4.56V24H.22V8.02zM9.5 8.02h4.37v2.18h.06c.61-1.15 2.1-2.37 4.32-2.37 4.62 0 5.47 3.04 5.47 6.99V24h-4.56v-7.29c0-1.74-.03-3.98-2.43-3.98-2.43 0-2.8 1.9-2.8 3.85V24H9.5V8.02z"/></svg></a>
       </div>
     </div>
   </div>

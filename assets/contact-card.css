@@ -22,9 +22,9 @@
      white card, ink type — so turning it over does not turn the
      lights out                                                    */
   --pcx-plate:      #FFFFFF;
-  --pcx-plate-ink:  #16202B;
-  --pcx-plate-mute: rgba(24,32,44,.60);
-  --pcx-plate-soft: rgba(24,32,44,.42);
+  --pcx-plate-ink:  #000000;
+  --pcx-plate-mute: #000000;
+  --pcx-plate-soft: #000000;
   --pcx-plate-rule: rgba(24,32,44,.20);
   --pcx-ease:   cubic-bezier(.22,.61,.36,1);
 
@@ -180,9 +180,9 @@
 .pcx-field{ position:relative; display:flex; flex-direction:column; }
 .pcx-field label{
   font-family:"IBM Plex Mono", ui-monospace, monospace;
-  font-size:.56rem; letter-spacing:.24em; text-transform:uppercase;
+  font-size:.72rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--pcx-plate-soft);
-  margin-bottom:.36rem;
+  margin-bottom:.4rem;
   transition:color .3s;
 }
 .pcx-field input,
@@ -193,7 +193,7 @@
   border:0; border-bottom:1px solid var(--pcx-plate-rule);
   border-radius:0;
   padding:.34rem 0 .46rem;
-  font:inherit; font-size:.86rem; line-height:1.45;
+  font:inherit; font-size:1rem; line-height:1.45;
   transition:border-color .35s var(--pcx-ease);
 }
 .pcx-field textarea{ resize:none; }
@@ -223,14 +223,14 @@
 .pcx-direct a{
   display:inline-flex; align-items:center; gap:.5rem;
   font-family:"IBM Plex Mono", ui-monospace, monospace;
-  font-size:.62rem; letter-spacing:.1em;
+  font-size:.78rem; letter-spacing:.06em;
   color:var(--pcx-plate-mute);
   text-decoration:none;
   transition:color .3s;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .pcx-direct a:hover{ color:var(--pcx-red); }
-.pcx-direct svg{ width:11px; height:11px; flex:none; opacity:.7; }
+.pcx-direct svg{ width:13px; height:13px; flex:none; opacity:.7; }
 
 .pcx-send{
   appearance:none; -webkit-appearance:none;

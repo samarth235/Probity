@@ -346,6 +346,14 @@ a{ color:inherit; text-decoration:none; }
 }
 .foot-social svg{ width:15px; height:15px; fill:currentColor; }
 
+/* the foot reads in solid black rather than a scale of greys */
+.foot-brand p,
+.foot-col h3,
+.foot-col a,
+.foot-col span,
+.foot-bar small,
+.foot-social a{ color:#000; }
+
 /* ---------- narrow ----------
    The mark takes the full width and the three columns stay side by
    side beneath it, rather than stacking into one very long leg.

@@ -114,7 +114,6 @@ function build(){
     <button class="pcx-return" type="button">${BACK_ARROW} The card</button>
 
     <div class="pcx-head">
-      <span class="pcx-kicker">Write to us</span>
       <h2 class="pcx-title">Tell us about the <em>property</em>.</h2>
     </div>
 
