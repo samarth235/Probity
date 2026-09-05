@@ -279,7 +279,7 @@ a{ color:inherit; text-decoration:none; }
 .foot-col h3{
   margin:0 0 1.15rem;
   font-family:var(--mono);
-  font-size:.6rem; letter-spacing:.26em; text-transform:uppercase;
+  font-size:.8rem; letter-spacing:.26em; text-transform:uppercase;
   color:var(--paper); font-weight:500;
 }
 /* a short red stroke above each heading, echoing the rule at the top */
@@ -366,7 +366,7 @@ a{ color:inherit; text-decoration:none; }
 }
 @media (max-width:560px){
   .foot-main{ gap:1.9rem 1.25rem; }
-  .foot-col h3{ font-size:.54rem; letter-spacing:.18em; margin-bottom:.9rem; }
+  .foot-col h3{ font-size:.72rem; letter-spacing:.18em; margin-bottom:.9rem; }
   .foot-col a,
   .foot-col span{ font-size:.74rem; }
   .foot-col li + li{ margin-top:.6rem; }
