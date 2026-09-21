@@ -267,7 +267,13 @@ html.is-booting .label span{ animation-play-state:paused; }
    on the light side of the same palette. Scoped to .head-band so
    every other section head is untouched. */
 .head-band .label span{ color:rgba(247,248,250,.66); }
-.head-band .section-head h1{ color:#F7F8FA; }
+.head-band .section-head h1{
+  color:#F7F8FA;
+  font-size:clamp(1.9rem,3.6vw,3.2rem);
+  line-height:1.12; letter-spacing:-.02em;
+  max-width:26ch;
+}
+.head-band .lede{ max-width:52ch; }
 .head-band .lede{ color:rgba(247,248,250,.78); }
 
 /* a hairline where the picture gives out, so the band has a
@@ -376,17 +382,6 @@ html.is-booting .label span{ animation-play-state:paused; }
   font-size:.88rem; color:rgba(24,32,44,.82);
   margin-top:.28rem; line-height:1.45;
 }
-.meta span{
-  display:block; font-family:var(--mono); font-size:.66rem;
-  letter-spacing:.12em; text-transform:uppercase;
-  color:rgba(24,32,44,.72);
-  /* auto, not a fixed gap — this is what drops the registration line
-     to the foot of the cell so the rules line up across a row even
-     when one authority's name runs to two lines. The breathing room
-     above the rule comes from the padding instead.                */
-  margin-top:auto; padding-top:.9rem;
-  border-top:1px solid rgba(24,32,44,.18);
-}
 
 .note{
   max-width:1440px; margin:clamp(2.5rem,5vw,3.5rem) auto 0;
@@ -419,7 +414,6 @@ html.is-booting .label span{ animation-play-state:paused; }
   .plate img{ max-height:64px; }
   .meta b{ font-size:1.02rem; }
   .meta i{ font-size:.82rem; }
-  .meta span{ font-size:.62rem; }
   /* the type lives on the inner span now, so the override has to
      land there — and the tighten keyframe has to be dropped, or it
      animates straight back over this narrower tracking */
@@ -499,15 +493,12 @@ html.is-booting .label span{ animation-play-state:paused; }
 
     <div class="section-head">
       <h1>
-        <span class="reveal"><span style="animation-delay:.66s">Property liaisoning,</span></span>
-        <span class="reveal"><span style="animation-delay:.76s">cleared in <em>Bengaluru</em>.</span></span>
+        <span class="reveal"><span style="animation-delay:.66s">Managing Properties. Maximizing Value. Building Trust.</span></span>
       </h1>
 
       <span class="reveal">
         <p class="lede" style="animation-delay:1.05s">
-          Each authority below has registered Probity to tender, execute or certify work
-          under its jurisdiction. Registration numbers, categories and validity dates are
-          available on request.
+          We deliver professional property management and strategic consultancy with a focus on efficiency, transparency, and long-term value.
         </p>
       </span>
     </div>
@@ -524,7 +515,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>GBA</b>
             <i>Greater Bengaluru Authority</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -535,7 +525,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BDA</b>
             <i>Bangalore Development Authority</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
@@ -546,7 +535,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BBMP</b>
             <i>Bruhat Bengaluru Mahanagara Palike</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -557,7 +545,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BESCOM</b>
             <i>Bangalore Electricity Supply Company Limited</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -568,7 +555,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>Fire &amp; Emergency</b>
             <i>Karnataka Fire &amp; Emergency Services</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
@@ -579,7 +565,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>KSPCB</b>
             <i>Karnataka State Pollution Control Board</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -590,7 +575,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>NHAI</b>
             <i>National Highways Authority of India</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -601,7 +585,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BMRCL</b>
             <i>Bangalore Metro Rail Corporation</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -612,7 +595,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>AAI</b>
             <i>Airports Authority of India</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
@@ -623,7 +605,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>HAL</b>
             <i>Hindustan Aeronautics Limited</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -634,7 +615,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BMRDA</b>
             <i>Bangalore Metropolitan Region Development Authority</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -645,7 +625,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>RDPR Karnataka</b>
             <i>Rural Development &amp; Panchayat Raj</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
@@ -656,7 +635,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>KIADB</b>
             <i>Karnataka Industrial Area Development Board</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -667,7 +645,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>RERA Karnataka</b>
             <i>Real Estate Regulatory Authority</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -678,7 +655,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>GSI</b>
             <i>Geological Survey of India</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
@@ -689,7 +665,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>MoEFCC</b>
             <i>Ministry of Environment, Forest &amp; Climate Change</i>
-            <span>Registered contractor</span>
           </div>
         </div>
 
@@ -700,7 +675,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>BSNL</b>
             <i>Bharat Sanchar Nigam Limited</i>
-            <span>Licensed works</span>
           </div>
         </div>
 
@@ -713,7 +687,6 @@ html.is-booting .label span{ animation-play-state:paused; }
           <div class="meta">
             <b>KPTCL</b>
             <i>Karnataka Power Transmission Corporation Limited</i>
-            <span>Approved vendor</span>
           </div>
         </div>
 
