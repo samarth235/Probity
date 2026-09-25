@@ -127,6 +127,7 @@
   container-type:inline-size;
   display:flex; flex-direction:column;
   overflow:hidden;
+  overflow:clip;   /* unscrollable, so a focused field cannot shift the plate */
   padding:clamp(18px,3.4%,30px);
   background:linear-gradient(152deg, #FFFFFF 0%, #FBFCFD 62%, #F4F6F9 100%);
   color:var(--pcx-plate-ink);

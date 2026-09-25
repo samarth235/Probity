@@ -245,6 +245,10 @@ function init(){
     cssRenderer.domElement.style.position = 'absolute';
     cssRenderer.domElement.style.inset = '0';
     cssRenderer.domElement.style.pointerEvents = 'none';
+    /* 'hidden' is still scrollable by script and by focus: iOS Safari
+       scrolls this layer to reveal a tapped input, sliding the form
+       off the WebGL card. 'clip' cannot scroll at all.              */
+    if (window.CSS && CSS.supports('overflow', 'clip')) cssRenderer.domElement.style.overflow = 'clip';
     cssHost.appendChild(cssRenderer.domElement);
 
     scene    = new THREE.Scene();
@@ -606,6 +610,15 @@ function init(){
   btnClose.addEventListener('click', close);
   btnTurn .addEventListener('click', () => turn(true));
   btnBack .addEventListener('click', () => turn(false));
+
+  /* belt and braces for engines without overflow:clip — anything in
+     the overlay that gets scrolled (other than the textarea's own
+     content) is put straight back, so the two layers stay welded   */
+  root.addEventListener('scroll', e => {
+    const t = e.target;
+    if (!t || t === document || t.tagName === 'TEXTAREA') return;
+    if (t.scrollTop || t.scrollLeft){ t.scrollTop = 0; t.scrollLeft = 0; }
+  }, true);
 
   root.addEventListener('click', e => {
     if (e.target.hasAttribute && e.target.hasAttribute('data-pcx-dismiss')) close();
