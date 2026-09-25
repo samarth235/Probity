@@ -135,10 +135,17 @@
               0 42px 90px -34px rgba(0,0,0,.8);
   pointer-events:none;
   opacity:0;
-  transition:opacity .5s var(--pcx-ease);
+  /* never show the plate's reverse: without this, turning back to
+     the front let the mirrored form fade out over the printed face
+     (most visible in iOS Safari)                                   */
+  -webkit-backface-visibility:hidden;
+          backface-visibility:hidden;
+  /* leaves at once, arrives with a fade — so it cannot linger over
+     the mesh once the card has turned away                         */
+  transition:opacity .12s linear;
 }
 .pcx.is-back .pcx-back{ pointer-events:auto; }
-.pcx-back.is-lit{ opacity:1; }
+.pcx-back.is-lit{ opacity:1; transition:opacity .5s var(--pcx-ease); }
 
 /* a hairline rule down the plate, echoing the printed card */
 .pcx-back::after{
@@ -246,6 +253,14 @@
 }
 .pcx-send:hover{ background:#9F2F22; gap:.9rem; }
 .pcx-send:active{ transform:translateY(1px); }
+.pcx-send:disabled{ cursor:progress; opacity:.6; }
+.pcx-fail{
+  flex:none; margin:0;
+  font-family:"IBM Plex Mono", ui-monospace, monospace;
+  font-size:.62rem; letter-spacing:.08em;
+  color:var(--pcx-red);
+}
+.pcx-fail[hidden]{ display:none; }
 .pcx-send svg{ width:15px; height:10px; flex:none; }
 
 /* the way back to the printed face */

@@ -30,6 +30,7 @@ const CARD_ASPECT = 1568 / 896;              /* 1.75 — a standard card  */
 const MAIL_TO     = 'Vidyasagar.khuba@gmail.com';
 const TEL_RAW     = '+919845724479';
 const TEL_SHOWN   = '98457 24479 / 98803 23883';
+const FORM_URL    = 'https://formspree.io/f/xppwrjga';
 
 /* ---------- projection contract ---------- */
 const PX     = 200;   /* screen px per world unit, at the card plane   */
@@ -117,7 +118,7 @@ function build(){
       <h2 class="pcx-title">Tell us about the <em>property</em>.</h2>
     </div>
 
-    <form class="pcx-form" novalidate>
+    <form class="pcx-form" action="${FORM_URL}" method="POST" novalidate>
       <div class="pcx-row">
         <div class="pcx-field">
           <label for="pcx-name">Your name</label>
@@ -150,6 +151,7 @@ function build(){
         </div>
         <button class="pcx-send" type="submit">Send message ${ARROW}</button>
       </div>
+      <p class="pcx-fail" role="alert" hidden>That didn't go through. Please try again, or call us directly.</p>
     </form>
 
     <div class="pcx-sealed">
@@ -157,8 +159,8 @@ function build(){
         <circle cx="13" cy="13" r="11.5" style="--len:73"/>
         <path class="inner" d="M9 17.5V8.5h4.6a3.2 3.2 0 0 1 0 6.4H9" style="--len:30"/>
       </svg>
-      <h3>Your note is ready to send.</h3>
-      <p>We handed it to your mail app with everything filled in — press send there and it reaches Vidyasagar directly.</p>
+      <h3>Your note is on its way.</h3>
+      <p>It has reached Vidyasagar directly. Expect a reply at the email you gave us.</p>
       <button class="pcx-again" type="button">Write another</button>
     </div>
   `;
@@ -183,6 +185,8 @@ function init(){
   const btnBack  = back.querySelector('.pcx-return');
   const btnAgain = back.querySelector('.pcx-again');
   const form     = back.querySelector('.pcx-form');
+  const btnSend  = back.querySelector('.pcx-send');
+  const failNote = back.querySelector('.pcx-fail');
 
   let state   = 'closed';      /* closed | front | turning | back      */
   let webgl   = true;
@@ -382,6 +386,11 @@ function init(){
     const w = size.fw + (size.bw - size.fw) * easeOutCubic(k);
     const h = size.fh + (size.bh - size.fh) * easeOutCubic(k);
     card.scale.set(w / PX, h / PX, THICK / PX);
+
+    /* the DOM plate grows WITH the mesh; sized to the full sheet from
+       the start, it overhung the half-grown card mid-turn on phones  */
+    const ph = Math.round(h) + 'px';
+    if (back.style.height !== ph) back.style.height = ph;
   }
 
   /* ============================================================
@@ -533,8 +542,11 @@ function init(){
 
   function mark(field, bad){ field.classList.toggle('is-bad', bad); return !bad; }
 
-  form.addEventListener('submit', e => {
+  let sending = false;
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
+    if (sending) return;
     const name = back.querySelector('#pcx-name');
     const mail = back.querySelector('#pcx-email');
     const msg  = back.querySelector('#pcx-msg');
@@ -545,15 +557,34 @@ function init(){
     ok = mark(msg.closest('.pcx-field'),  !msg.value.trim())   && ok;
     if (!ok){ (back.querySelector('.is-bad input, .is-bad textarea') || name).focus(); return; }
 
-    /* No server sits behind this page, so the note is handed to the
-       visitor's own mail client fully composed. Swap this block for
-       a fetch() when an endpoint exists.                           */
-    const subject = `Website enquiry — ${name.value.trim()}`;
-    const body    = `${msg.value.trim()}\n\n—\n${name.value.trim()}\n${mail.value.trim()}`;
-    const href    = `mailto:${MAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    /* posted to Formspree, which forwards it to the inbox */
+    const data = new FormData(form);
+    data.set('name', name.value.trim());
+    data.set('email', mail.value.trim());
+    data.set('message', msg.value.trim());
+    data.set('_subject', `Website enquiry — ${name.value.trim()}`);
 
-    back.classList.add('is-sealed');
-    window.setTimeout(() => { window.location.href = href; }, 260);
+    sending = true;
+    failNote.hidden = true;
+    btnSend.disabled = true;
+    back.classList.add('is-sending');
+
+    try{
+      const res = await fetch(FORM_URL, {
+        method:'POST', body:data, headers:{ Accept:'application/json' }
+      });
+      if (!res.ok) throw new Error(`Formspree ${res.status}`);
+      back.classList.add('is-sealed');
+      const again = back.querySelector('.pcx-again');
+      if (again) again.focus({ preventScroll:true });
+    } catch (err){
+      console.warn('[probity] message not sent', err);
+      failNote.hidden = false;
+    } finally {
+      sending = false;
+      btnSend.disabled = false;
+      back.classList.remove('is-sending');
+    }
   });
 
   [...back.querySelectorAll('input, textarea')].forEach(el => {
@@ -562,6 +593,7 @@ function init(){
 
   btnAgain.addEventListener('click', () => {
     form.reset();
+    failNote.hidden = true;
     [...back.querySelectorAll('.pcx-field')].forEach(f => f.classList.remove('is-bad'));
     back.classList.remove('is-sealed');
     const first = back.querySelector('input');
